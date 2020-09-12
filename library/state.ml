@@ -1,4 +1,4 @@
-module Make(Wrapped: Monad.MONAD)(S: sig type t end) = struct
+module MakeT(Wrapped: Monad.MONAD)(S: sig type t end) = struct
 
   type s = S.t
 
@@ -45,7 +45,7 @@ module Make(Wrapped: Monad.MONAD)(S: sig type t end) = struct
 
 end
 
-module MakeIdentity (S: sig type t end) = struct
-  include Make(Identity)(S)
+module Make (S: sig type t end) = struct
+  include MakeT(Identity)(S)
   let runState m ~init = m init |> Identity.unlift
 end

@@ -1,4 +1,4 @@
-module Make:
+module MakeT:
 functor (Wrapped: Monad.MONAD) (S: sig type t end) -> sig
   type s
   include Monad.MONAD
@@ -16,7 +16,7 @@ functor (Wrapped: Monad.MONAD) (S: sig type t end) -> sig
   end
 end with type s = S.t
 
-module MakeIdentity:
+module Make:
 functor (S: sig type t end) -> sig
 
   type s

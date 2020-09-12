@@ -4,7 +4,7 @@ module type MONOID = sig
   val append: t -> t -> t
 end
 
-module Make(Wrapped: Monad.MONAD)(W: MONOID) = struct
+module MakeT(Wrapped: Monad.MONAD)(W: MONOID) = struct
   type w = W.t
 
   module InternalWriterMonad = struct
@@ -41,7 +41,7 @@ module Make(Wrapped: Monad.MONAD)(W: MONOID) = struct
   let runWriter m = m
 end
 
-module MakeIdentity (W: MONOID) = struct
-  include Make(Identity)(W)
+module Make(W: MONOID) = struct
+  include MakeT(Identity)(W)
   let runWriter m = m |> Identity.unlift
 end

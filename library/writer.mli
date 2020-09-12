@@ -4,7 +4,7 @@ module type MONOID = sig
   val append: t -> t -> t
 end
 
-module Make:
+module MakeT:
 functor (Wrapped: Monad.MONAD)(W: MONOID) -> sig
   type w
   include Monad.MONAD
@@ -22,7 +22,7 @@ functor (Wrapped: Monad.MONAD)(W: MONOID) -> sig
 end with type w = W.t
 
 
-module MakeIdentity:
+module Make:
 functor (W: MONOID) -> sig
   type w
   include Monad.MONAD
