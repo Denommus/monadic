@@ -41,7 +41,4 @@ module MakeT(Wrapped: Monad.MONAD)(W: MONOID) = struct
   let runWriter m = m
 end
 
-module Make(W: MONOID) = struct
-  include MakeT(Identity)(W)
-  let runWriter m = m |> Identity.unlift
-end
+module Make(W: MONOID) = MakeT(Identity)(W)
