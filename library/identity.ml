@@ -17,3 +17,5 @@ include IdentityMonad
 include Monad.MonadInfix(IdentityMonad)
 
 module Syntax = Monad.MonadSyntax(IdentityMonad)
+
+let unlift identity = identity
