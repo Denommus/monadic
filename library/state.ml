@@ -45,4 +45,4 @@ module MakeT(Wrapped: Monad.MONAD)(S: sig type t end) = struct
 
 end
 
-module Make (S: sig type t end) =  MakeT(Identity)(S)
+module Make = MakeT(Identity)
