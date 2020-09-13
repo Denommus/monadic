@@ -5,7 +5,7 @@ functor (Wrapped: Monad.MONAD) (S: sig type t end) -> sig
   val pure: 'a -> 'a t
   val get: s t
   val put: s -> unit t
-  val runState: 'a t -> init:s -> ('a * s) Wrapped.t
+  val run: 'a t -> init:s -> ('a * s) Wrapped.t
   val ( <$> ): ('a -> 'b) -> 'a t -> 'b t
   val ( <*> ): ('a -> 'b) t -> 'a t -> 'b t
   val ( >>= ): 'a t -> ('a -> 'b t) -> 'b t
@@ -26,7 +26,7 @@ functor (S: sig type t end) -> sig
   val pure: 'a -> 'a t
   val get: s t
   val put: s -> unit t
-  val runState: 'a t -> init:s -> ('a * s)
+  val run: 'a t -> init:s -> ('a * s)
   val ( <$> ): ('a -> 'b) -> 'a t -> 'b t
   val ( <*> ): ('a -> 'b) t -> 'a t -> 'b t
   val ( >>= ): 'a t -> ('a -> 'b t) -> 'b t

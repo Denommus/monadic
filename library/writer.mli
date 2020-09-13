@@ -10,7 +10,7 @@ functor (Wrapped: Monad.MONAD)(W: MONOID) -> sig
   include Monad.MONAD
   val pure: 'a -> 'a t
   val tell: w -> unit t
-  val runWriter: 'a t -> ('a * w) Wrapped.t
+  val run: 'a t -> ('a * w) Wrapped.t
   val ( <$> ): ('a -> 'b) -> 'a t -> 'b t
   val ( <*> ): ('a -> 'b) t -> 'a t -> 'b t
   val ( >>= ): 'a t -> ('a -> 'b t) -> 'b t
@@ -30,7 +30,7 @@ functor (W: MONOID) -> sig
   include Monad.MONAD
   val pure: 'a -> 'a t
   val tell: w -> unit t
-  val runWriter: 'a t -> ('a * w)
+  val run: 'a t -> ('a * w)
   val ( <$> ): ('a -> 'b) -> 'a t -> 'b t
   val ( <*> ): ('a -> 'b) t -> 'a t -> 'b t
   val ( >>= ): 'a t -> ('a -> 'b t) -> 'b t

@@ -40,7 +40,7 @@ module MakeT(Wrapped: Monad.MONAD)(W: MONOID) = struct
 
   let tell w = Wrapped.pure ((), w)
 
-  let runWriter m = m
+  let run m = m
 end
 
 module Make = MakeT(Identity)

@@ -17,8 +17,8 @@ let reader_writer =
   ReaderWriter.pure foo
 
 let test_transform _ =
-  let reader_result = ReaderWriter.runReader ~init:10 reader_writer in
-  let writer_result = WriterString.runWriter reader_result in
+  let reader_result = ReaderWriter.run ~init:10 reader_writer in
+  let writer_result = WriterString.run reader_result in
   assert_equal (10, "bar") writer_result
 
 let suite =

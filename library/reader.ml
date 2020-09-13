@@ -36,7 +36,7 @@ module MakeT(Wrapped: Monad.MONAD)(R: sig type t end) = struct
 
   let peek = fun r -> Wrapped.pure r
 
-  let runReader m ~init = m init
+  let run m ~init = m init
 end
 
 module Make = MakeT(Identity)

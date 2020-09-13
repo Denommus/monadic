@@ -4,7 +4,7 @@ functor (Wrapped: Monad.MONAD) (R: sig type t end) -> sig
   include Monad.MONAD
   val pure: 'a -> 'a t
   val peek: r t
-  val runReader: 'a t -> init:r -> 'a Wrapped.t
+  val run: 'a t -> init:r -> 'a Wrapped.t
   val ( <$> ): ('a -> 'b) -> 'a t -> 'b t
   val ( <*> ): ('a -> 'b) t -> 'a t -> 'b t
   val ( >>= ): 'a t -> ('a -> 'b t) -> 'b t
@@ -23,7 +23,7 @@ functor (R: sig type t end) -> sig
   include Monad.MONAD
   val pure: 'a -> 'a t
   val peek: r t
-  val runReader: 'a t -> init:r -> 'a
+  val run: 'a t -> init:r -> 'a
   val ( <$> ): ('a -> 'b) -> 'a t -> 'b t
   val ( <*> ): ('a -> 'b) t -> 'a t -> 'b t
   val ( >>= ): 'a t -> ('a -> 'b t) -> 'b t

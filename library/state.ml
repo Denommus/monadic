@@ -42,7 +42,7 @@ module MakeT(Wrapped: Monad.MONAD)(S: sig type t end) = struct
 
   let put s =  fun _ -> Wrapped.pure ((), s)
 
-  let runState m ~init = m init
+  let run m ~init = m init
 
 end
 
