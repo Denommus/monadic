@@ -1,13 +1,13 @@
 module InternalIdentityMonad = struct
   type 'a t = 'a
 
-  let pure v = v
+  let pure v = v [@@inline]
 
-  let map f x = f x
+  let map f x = f x [@@inline]
 
-  let apply fa xa = fa xa
+  let apply fa xa = fa xa [@@inline]
 
-  let bind m f = f m
+  let bind m f = f m [@@inline]
 end
 
 module IdentityMonad = Monad.DefaultJoin(InternalIdentityMonad)
