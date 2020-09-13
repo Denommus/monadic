@@ -1,0 +1,6 @@
+* Monadic
+
+  *Monadic* is a Monad library for OCaml. It implements every Monad as
+  a Monad Transformer, so you can combine them together.
+
+  More documentation will be written in the next few weeks.
