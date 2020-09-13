@@ -17,12 +17,12 @@ let reader_writer =
   let* foo = peek in
   let* _ = string_of_int foo |> tell |> elevate in
   let* _ = tell "bar" |> elevate in
-  ReaderWriter.pure foo
+  ReaderWriter.pure 20
 
 let test_transform _ =
   let reader_result = ReaderWriter.run ~init:10 reader_writer in
   let writer_result = WriterString.run reader_result in
-  assert_equal (10, "10bar") writer_result
+  assert_equal (20, "10bar") writer_result
 
 let suite =
   "Example" >::: [
