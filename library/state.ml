@@ -14,7 +14,7 @@ module MakeT(Wrapped: Monad.MONAD)(S: sig type t end) = struct
 
     let map f x = fun s -> let+ result, s' = x s in (f result, s')
 
-    let apply fa sa = fun s -> let open WrappedSyntax in
+    let apply fa sa = fun s ->
       let* f, result1 = fa s in
       let+ s', result2 = sa result1 in
       f s', result2
