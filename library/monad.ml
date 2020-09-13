@@ -51,3 +51,60 @@ module MonadSyntax(M: MONAD) = struct
 
   let ( let* ) = M.bind
 end
+
+module ApplicativeFunctions(A: APPLICATIVE) = struct
+  open A
+  open ApplicativeSyntax(A)
+
+  let ( *> ) m m' = let+ _ = m
+                    and+ x' = m'
+                    in x'
+
+  let ( <* ) m m' = let+ x' = m
+                    and+ _ = m'
+                    in x'
+
+  let sequence ms =
+    let k m m' =
+      let+ x = m
+      and+ xs = m' in
+      (x::xs) in
+    List.fold_right k ms (pure [])
+
+  let sequence_ ms = List.fold_right ( *> ) ms (pure ())
+
+  let a_map f ms = sequence (List.map f ms)
+
+  let a_map_ f ms = sequence_ (List.map f ms)
+
+  let a_filter f xs =
+    let k curr acc =
+      let+ flg = f curr
+      and+ ys = acc
+      in if flg then curr::xs else ys in
+    List.fold_right k xs (pure [])
+
+  let traverse f xs = List.map f xs |> sequence
+
+  let a_for xs f = traverse f xs
+
+  let a_for_ xs f = a_for xs f *> pure ()
+end
+
+module MonadFunctions(M: MONAD) = struct
+  open M
+  open MonadSyntax(M)
+
+  open ApplicativeFunctions(M)
+
+  let m_fold f initial ms =
+    let c x k z = let* m' = f z x in k m' in
+    List.fold_right c ms pure initial
+
+  let m_fold_ f initial ms =
+    m_fold f initial ms *> pure ()
+
+  let ( >=> ) f1 f2 s = let* s' = f1 s in
+                        let+ s'' = f2 s' in
+                        s''
+end
