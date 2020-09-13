@@ -13,6 +13,8 @@ functor (Wrapped: Monad.MONAD) (R: sig type t end) -> sig
     val ( and+ ): 'a t -> 'b t -> ('a * 'b) t
     val ( let* ): 'a t -> ('a -> 'b t) -> 'b t
   end
+
+  val elevate: 'a Wrapped.t -> 'a t
 end with type r = R.t
 
 module Make:

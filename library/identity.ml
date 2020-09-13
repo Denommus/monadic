@@ -1,4 +1,4 @@
-module InternalIdentityMonad = struct
+module IdentityMonad = struct
   type 'a t = 'a
 
   let pure v = v [@@inline]
@@ -8,9 +8,9 @@ module InternalIdentityMonad = struct
   let apply fa xa = fa xa [@@inline]
 
   let bind m f = f m [@@inline]
-end
 
-module IdentityMonad = Monad.DefaultJoin(InternalIdentityMonad)
+  let join m = bind m (fun x -> x) [@@inline]
+end
 
 include IdentityMonad
 

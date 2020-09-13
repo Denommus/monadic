@@ -1,11 +1,11 @@
 module MakeT(Wrapped: Monad.MONAD)(R: sig type t end) = struct
   type r = R.t
 
-  module InternalReaderMonad = struct
+  module WrappedSyntax = Monad.MonadSyntax(Wrapped)
 
-    module WrappedSyntax = Monad.MonadSyntax(Wrapped)
+  open WrappedSyntax
 
-    open WrappedSyntax
+  module ReaderMonad: Monad.MONAD with type 'a t = r -> 'a Wrapped.t = struct
 
     type 'a t = r -> 'a Wrapped.t
 
@@ -23,11 +23,12 @@ module MakeT(Wrapped: Monad.MONAD)(R: sig type t end) = struct
     let bind m k = fun r ->
       let* v = m r in k v r
 
+    let join m = bind m (fun x -> x)
   end
 
-  module ReaderMonad = Monad.DefaultJoin(InternalReaderMonad)
-
   include ReaderMonad
+
+  let elevate w = fun _ -> w
 
   include Monad.MonadInfix(ReaderMonad)
 

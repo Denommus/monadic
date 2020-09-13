@@ -19,6 +19,8 @@ functor (Wrapped: Monad.MONAD)(W: MONOID) -> sig
     val ( and+ ): 'a t -> 'b t -> ('a * 'b) t
     val ( let* ): 'a t -> ('a -> 'b t) -> 'b t
   end
+
+  val elevate: 'a Wrapped.t -> 'a t
 end with type w = W.t
 
 

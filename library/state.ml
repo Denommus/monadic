@@ -2,11 +2,11 @@ module MakeT(Wrapped: Monad.MONAD)(S: sig type t end) = struct
 
   type s = S.t
 
-  module InternalStateMonad = struct
+  module WrappedSyntax = Monad.MonadSyntax(Wrapped)
 
-    module WrappedSyntax = Monad.MonadSyntax(Wrapped)
+  open WrappedSyntax
 
-    open WrappedSyntax
+  module StateMonad: Monad.MONAD with type 'a t = s -> ('a * s) Wrapped.t = struct
 
     type 'a t = s -> ('a * s) Wrapped.t
 
@@ -22,13 +22,14 @@ module MakeT(Wrapped: Monad.MONAD)(S: sig type t end) = struct
     let bind m k = fun s ->
       let* result, s' = m s in k result s'
 
-  end
+    let join m = bind m (fun x -> x)
 
-  (* Implementing join from bind and pure *)
-  module StateMonad = Monad.DefaultJoin(InternalStateMonad)
+  end
 
   (* Adding all the monadic functions to the outer scope *)
   include StateMonad
+
+  let elevate w = fun s -> let+ x = w in x, s
 
   (* Adding the infix functions *)
   include Monad.MonadInfix(StateMonad)

@@ -21,22 +21,6 @@ module type MONAD = sig
   val join: 'a t t -> 'a t
 end
 
-module DefaultBind(M: sig
-                       include APPLICATIVE
-                       val join: 'a t t -> 'a t
-                     end) = struct
-  include M
-  let bind m f = M.join (M.map f m)
-end
-
-module DefaultJoin(M: sig
-                       include APPLICATIVE
-                       val bind: 'a t -> ('a -> 'b t) -> 'b t
-                     end) = struct
-  include M
-  let join m = M.bind m (fun x -> x)
-end
-
 module FunctorInfix(F: FUNCTOR) = struct
   let ( <$> ) = F.map
 end

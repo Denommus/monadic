@@ -7,12 +7,12 @@ end
 module MakeT(Wrapped: Monad.MONAD)(W: MONOID) = struct
   type w = W.t
 
-  module InternalWriterMonad = struct
+  module WrappedSyntax = Monad.MonadSyntax(Wrapped)
+
+  open WrappedSyntax
+
+  module WriterMonad: Monad.MONAD with type 'a t = ('a * w) Wrapped.t = struct
     type 'a t = ('a * w) Wrapped.t
-
-    module WrappedSyntax = Monad.MonadSyntax(Wrapped)
-
-    open WrappedSyntax
 
     let pure v = Wrapped.pure (v, W.empty)
 
@@ -26,11 +26,13 @@ module MakeT(Wrapped: Monad.MONAD)(W: MONOID) = struct
     let bind m f = let* x1, w1 = m in
                    let+ x2, w2 = f x1 in
                    x2, W.append w1 w2
+
+    let join m = bind m (fun x -> x)
   end
 
-  module WriterMonad = Monad.DefaultJoin(InternalWriterMonad)
-
   include WriterMonad
+
+  let elevate v = let+ x = v in (x, W.empty)
 
   include Monad.MonadInfix(WriterMonad)
 
