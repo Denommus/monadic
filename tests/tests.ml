@@ -24,9 +24,23 @@ let test_transform _ =
   let writer_result = WriterString.run reader_result in
   assert_equal (20, "10bar") writer_result
 
+module RefState = Monadic.RefState.Make(String)
+
+let test_ref_state _ =
+  let reference = ref "Foo" in
+  let state = let open RefState.Syntax in
+              let open RefState in
+              let+ foo = get
+              and+ _ = put "Bar"
+              in foo in
+  let result = RefState.run state ~init:reference in
+  assert_equal result "Foo";
+  assert_equal !reference "Bar"
+
 let suite =
   "Example" >::: [
-      "test_transform" >:: test_transform
+      "test_transform" >:: test_transform;
+      "test_ref_state" >:: test_ref_state
     ]
 
 
