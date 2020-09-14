@@ -22,34 +22,34 @@ module type MONAD = sig
 end
 
 module FunctorInfix(F: FUNCTOR) = struct
-  let ( <$> ) = F.map
+  let ( <$> ) f xa = F.map f xa [@@inline]
 end
 
 module ApplicativeInfix(A: APPLICATIVE) = struct
   include FunctorInfix(A)
-  let ( <*> ) = A.apply
+  let ( <*> ) fa xa = A.apply fa xa [@@inline]
 end
 
 module MonadInfix(M: MONAD) = struct
   include ApplicativeInfix(M)
-  let ( >>= ) = M.bind
+  let ( >>= ) m f = M.bind m f [@@inline]
 end
 
 module ApplicativeSyntax(A: APPLICATIVE) = struct
 
   module Helper = ApplicativeInfix(A)
 
-  let ( let+ ) x f = A.map f x
+  let ( let+ ) x f = A.map f x [@@inline]
 
   let ( and+ ) xa ya = let open Helper in
-                       A.pure (fun x y -> (x, y)) <*> xa <*> ya
+                       (fun x y -> (x, y)) <$> xa <*> ya [@@inline]
 
 end
 
 module MonadSyntax(M: MONAD) = struct
   include ApplicativeSyntax(M)
 
-  let ( let* ) = M.bind
+  let ( let* ) m f = M.bind m f [@@inline]
 end
 
 module type MAKE = sig
@@ -91,9 +91,9 @@ module ApplicativeFunctions(A: APPLICATIVE) = struct
 
   let sequence_ ms = List.fold_right ( *> ) ms (pure ())
 
-  let a_map f ms = sequence (List.map f ms)
-
-  let a_map_ f ms = sequence_ (List.map f ms)
+  let a_map f ms = sequence (List.map f ms) [@@inline]
+ 
+  let a_map_ f ms = sequence_ (List.map f ms) [@@inline]
 
   let a_filter f xs =
     let k curr acc =
@@ -102,11 +102,11 @@ module ApplicativeFunctions(A: APPLICATIVE) = struct
       in if flg then curr::xs else ys in
     List.fold_right k xs (pure [])
 
-  let traverse f xs = List.map f xs |> sequence
+  let traverse f xs = List.map f xs |> sequence [@@inline]
 
-  let a_for xs f = traverse f xs
+  let a_for xs f = traverse f xs [@@inline]
 
-  let a_for_ xs f = a_for xs f *> pure ()
+  let a_for_ xs f = a_for xs f *> pure () [@@inline]
 end
 
 module MonadFunctions(M: MONAD) = struct
@@ -120,7 +120,7 @@ module MonadFunctions(M: MONAD) = struct
     List.fold_right c ms pure initial
 
   let m_fold_ f initial ms =
-    m_fold f initial ms *> pure ()
+    m_fold f initial ms *> pure () [@@inline]
 
   let ( >=> ) f1 f2 s = let* s' = f1 s in
                         let+ s'' = f2 s' in
