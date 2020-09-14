@@ -41,6 +41,8 @@ module MakeT(Wrapped: Monad.MONAD)(W: MONOID) = struct
   let tell w = Wrapped.pure ((), w)
 
   let run m = m
+
+  let lift x = x [@@inline]
 end
 
 module Make = MakeT(Identity)

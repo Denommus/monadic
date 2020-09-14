@@ -37,6 +37,8 @@ module MakeT(Wrapped: Monad.MONAD)(R: sig type t end) = struct
   let peek = fun r -> Wrapped.pure r
 
   let run m ~init = m init
+
+  let lift x = x [@@inline]
 end
 
 module Make = MakeT(Identity)

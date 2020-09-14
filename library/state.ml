@@ -44,6 +44,8 @@ module MakeT(Wrapped: Monad.MONAD)(S: sig type t end) = struct
 
   let run m ~init = m init
 
+  let lift x = x [@@inline]
+
 end
 
 module Make = MakeT(Identity)
