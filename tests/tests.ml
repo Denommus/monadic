@@ -27,15 +27,15 @@ let test_transform _ =
 module RefState = Monadic.RefState.Make(String)
 
 let test_ref_state _ =
-  let reference = ref "Foo" in
   let state = let open RefState.Syntax in
               let open RefState in
               let+ foo = get
               and+ _ = put "Bar"
+              and+ _ = lift (fun s -> "", s ^ "Blah")
               in foo in
-  let result = RefState.run state ~init:reference in
+  let (result, state) = RefState.run state ~init:"Foo" in
   assert_equal result "Foo";
-  assert_equal !reference "Bar"
+  assert_equal state "BarBlah"
 
 let suite =
   "Example" >::: [
