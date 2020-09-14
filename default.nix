@@ -21,6 +21,7 @@ ocamlPackages.buildDunePackage {
     nodePackages.ocaml-language-server
     merlin
     ounit2
+    ocamlformat
   ];
 
   buildPhase = "dune build -p ${pname}";

@@ -2,13 +2,15 @@ open OUnit2
 
 let empty_list = []
 
-module WriterString = Monadic.Writer.Make(struct
-                          type t = string
-                          let empty = ""
-                          let append = (^)
-                        end)
+module WriterString = Monadic.Writer.Make (struct
+  type t = string
 
-module ReaderWriter = Monadic.Reader.MakeT(WriterString)(Int)
+  let empty = ""
+
+  let append = ( ^ )
+end)
+
+module ReaderWriter = Monadic.Reader.MakeT (WriterString) (Int)
 
 let reader_writer =
   let open ReaderWriter.Syntax in
@@ -24,25 +26,26 @@ let test_transform _ =
   let writer_result = WriterString.run reader_result in
   assert_equal (20, "10bar") writer_result
 
-module RefState = Monadic.RefState.Make(String)
+module RefState = Monadic.RefState.Make (String)
 
 let test_ref_state _ =
-  let state = let open RefState.Syntax in
-              let open RefState in
-              let+ foo = get
-              and+ _ = put "Bar"
-              and+ _ = lift (fun s -> "", s ^ "Blah")
-              in foo in
-  let (result, state) = RefState.run state ~init:"Foo" in
+  let state =
+    let open RefState.Syntax in
+    let open RefState in
+    let+ foo = get
+    and+ _ = put "Bar"
+    and+ _ = lift (fun s -> ("", s ^ "Blah")) in
+    foo
+  in
+  let result, state = RefState.run state ~init:"Foo" in
   assert_equal result "Foo";
   assert_equal state "BarBlah"
 
 let suite =
-  "Example" >::: [
-      "test_transform" >:: test_transform;
-      "test_ref_state" >:: test_ref_state
-    ]
+  "Example"
+  >::: [
+         "test_transform" >:: test_transform;
+         "test_ref_state" >:: test_ref_state;
+       ]
 
-
-let () =
-  run_test_tt_main suite
+let () = run_test_tt_main suite

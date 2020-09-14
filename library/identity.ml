@@ -13,7 +13,5 @@ module IdentityMonad = struct
 end
 
 include IdentityMonad
-
-include Monad.MonadInfix(IdentityMonad)
-
-module Syntax = Monad.MonadSyntax(IdentityMonad)
+include Monad.MonadInfix (IdentityMonad)
+module Syntax = Monad.MonadSyntax (IdentityMonad)
