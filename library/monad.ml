@@ -52,6 +52,24 @@ module MonadSyntax(M: MONAD) = struct
   let ( let* ) = M.bind
 end
 
+module type MAKE = sig
+  include MONAD
+  val ( <$> ): ('a -> 'b) -> 'a t -> 'b t
+  val ( <*> ): ('a -> 'b) t -> 'a t -> 'b t
+  val ( >>= ): 'a t -> ('a -> 'b t) -> 'b t
+  module Syntax: sig
+    val ( let+ ): 'a t -> ('a -> 'b) -> 'b t
+    val ( and+ ): 'a t -> 'b t -> ('a * 'b) t
+    val ( let* ): 'a t -> ('a -> 'b t) -> 'b t
+  end
+end
+
+module type MAKE_T = sig
+  type 'a wrapped
+  include MAKE
+  val elevate: 'a wrapped -> 'a t
+end
+
 module ApplicativeFunctions(A: APPLICATIVE) = struct
   open A
   open ApplicativeSyntax(A)
