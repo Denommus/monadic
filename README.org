@@ -12,58 +12,57 @@
 
 *** Feature-set
 
-   For now, MTL (being older) is more feature-complete. On the other
-   hand, its documentation is sub-par, and it hasn't been updated for
-   a long time. Its implementation details are also quite complex.
+    For now, MTL (being older) is more feature-complete. On the other
+    hand, its documentation is sub-par, and it hasn't been updated for
+    a long time. Its implementation details are also quite complex.
 
-   Here is a list of monad transformers in each library:
+    Here is a list of monad transformers in each library:
 
-   | Transformer                  | Monadic | MTL |
-   |------------------------------+---------+-----|
-   | Identity                     | [X]     | [X] |
-   | Option (called Maybe in MTL) | [X]     | [X] |
-   | Result (called Error in MTL) | [X]     | [X] |
-   | Reader                       | [X]     | [X] |
-   | State                        | [X]     | [X] |
-   | Writer                       | [X]     | [X] |
-   | RefState                     | [X]     | [ ] |
-   | Continuation                 | [ ]     | [X] |
-   | Ref                          | [ ]     | [X] |
-   | Tree                         | Planned | [X] |
-   | List                         | Planned | [X] |
-   | Zip                          | Planned | [ ] |
+    | Transformer                  | Monadic | MTL |
+    |------------------------------+---------+-----|
+    | Identity                     | [X]     | [X] |
+    | Option (called Maybe in MTL) | [X]     | [X] |
+    | Result (called Error in MTL) | [X]     | [X] |
+    | Reader                       | [X]     | [X] |
+    | State                        | [X]     | [X] |
+    | Writer                       | [X]     | [X] |
+    | RefState                     | [X]     | [ ] |
+    | Continuation                 | [ ]     | [X] |
+    | Ref                          | [ ]     | [X] |
+    | Tree                         | Planned | [X] |
+    | List                         | Planned | [X] |
+    | Zip                          | Planned | [ ] |
 
 **** Some observations:
 
-    RefState in Monadic is simply a State monad implemented internally
-    by using a Ref instead of passing a tuple ahead in the context.
-    Sometimes it might be more efficient as a regular State, but you
-    should validate it yourself before deciding for one or the other.
+     RefState in Monadic is simply a State monad implemented
+     internally by using a Ref instead of passing a tuple ahead in the
+     context. Sometimes it might be more efficient as a regular State,
+     but you should validate it yourself before deciding for one or
+     the other.
 
-    Continuation will probably never be implemented in Monadic, given
-    it introduces a lot of complexity on the implementation side of
-    every transformer. I'll consider it in the future if I can think of
-    a simple implementation.
+     Continuation will probably never be implemented in Monadic, given
+     it introduces a lot of complexity on the implementation side of
+     every transformer. I'll consider it in the future if I can think
+     of a simple implementation.
 
-    Ref, from MTL, is a structured State monad where you have a
-    Dictionary where the keys are integers and the values are
-    parameterizable. This seems redundant of a usage of State + lens,
-    and goes against the simplicity of the library.
+     Ref, from MTL, is a structured State monad where you have a
+     Dictionary where the keys are integers and the values are
+     parameterizable. This seems redundant of a usage of State + lens,
+     and goes against the simplicity of the library.
 
 ** Simplicity
 
-   The library will not have any dependencies besides
-   dev-dependencies that help on editor support, such as
-   ocaml-language-server.
+   The library will not have any dependencies besides dev-dependencies
+   that help on editor support, such as ocaml-language-server.
 
-   If it uses unusual module-level or
-   type-level programming, it will be well documented so that client
-   users can use the same sort of tricks on their extensions.
+   If it uses unusual module-level or type-level programming, it will
+   be well documented so that client users can use the same sort of
+   tricks on their extensions.
 
 ** DRYness
 
-   As much as possible, the library will try to avoid code
-   repetition.
+   As much as possible, the library will try to avoid code repetition.
 
 ** Extensibility
 
