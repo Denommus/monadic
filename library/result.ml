@@ -43,6 +43,8 @@ struct
   let run m = m [@@inline]
 
   let lift x = x [@@inline]
+
+  let error x = Error x |> Wrapped.pure
 end
 
 module Make = MakeT (Identity)

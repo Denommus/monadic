@@ -27,6 +27,8 @@ module Make : functor
   val run : 'a t -> ('a, e) result
 
   val lift : ('a, e) result -> 'a t
+
+  val error : e -> 'a t
 end
 with type e = E.t
 with type 'a t = ('a, E.t) result

@@ -34,6 +34,8 @@ module MakeT (Wrapped : Monad.MONAD) = struct
   let run m = m [@@inline]
 
   let lift x = x [@@inline]
+
+  let none _ = Wrapped.pure None
 end
 
 module Make = MakeT (Identity)
