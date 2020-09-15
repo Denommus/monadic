@@ -11,15 +11,13 @@ module MakeT (Wrapped : Monad.MONAD) = struct
       let+ v = x in
       Stdlib.List.map f v
 
-    let rec apply fa xa =
-      let* f = fa in
-      let* x = xa in
-      match f with
-      | [] -> Wrapped.pure []
-      | f' :: fs ->
-          let l1 = Stdlib.List.map f' x in
-          let+ l2 = apply (Wrapped.pure fs) (Wrapped.pure x) in
-          l1 @ l2
+    let apply fa xa =
+      let+ fs = fa and+ xs = xa in
+      let accum curr acc =
+        let l1 = Stdlib.List.map curr xs in
+        l1 @ acc
+      in
+      Stdlib.List.fold_right accum fs []
 
     let sequence ms =
       let open Monad.ApplicativeFunctions (Wrapped) in

@@ -39,9 +39,5 @@ module Make : sig
 
     val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
   end
-
-  val run : 'a t -> 'a list
-
-  val lift : 'a list -> 'a t
 end
 with type 'a t = 'a list
