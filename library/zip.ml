@@ -30,6 +30,10 @@ module MakeT (Wrapped : Monad.MONAD) = struct
 
   include Monad.ApplicativeInfix (ZipApplicative)
   module Syntax = Monad.ApplicativeSyntax (ZipApplicative)
+
+  let lift m = m [@@inline]
+
+  let run m = m [@@inline]
 end
 
 module Make = MakeT (Identity)
