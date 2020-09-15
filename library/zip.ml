@@ -16,12 +16,12 @@ module MakeT (Wrapped : Monad.MONAD) = struct
       | l1 :: ls1, l2 :: ls2 -> (l1, l2) :: zip ls1 ls2
       | _ -> []
 
-    let apply : ('a -> 'b) t -> 'a t -> 'b t =
-     fun fa xa ->
-      let* f = fa in
-      let* x = xa in
+    let apply: ('a -> 'b) t -> 'a t -> 'b t =
+      fun fa xa ->
+      let+ f = fa
+      and+ x = xa in
       let c (x, y) = x y in
-      ListMonad.apply (ListMonad.pure c) (Wrapped.pure @@ zip f x)
+      zip f x |> Stdlib.List.map c
   end
 
   include ZipApplicative
