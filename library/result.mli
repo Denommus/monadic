@@ -13,6 +13,7 @@ module MakeT : functor
   val lift : ('a, e) result Wrapped.t -> 'a t
 end
 with type e = E.t
+with type 'a t = ('a, E.t) result Wrapped.t
 
 module Make : functor
   (E : sig
@@ -28,3 +29,4 @@ module Make : functor
   val lift : ('a, e) result -> 'a t
 end
 with type e = E.t
+with type 'a t = ('a, E.t) result

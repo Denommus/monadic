@@ -38,10 +38,13 @@ module MonadInfix (M : MONAD) = struct
   let ( >>= ) m f = M.bind m f [@@inline]
 end
 
+module FunctorSyntax (F : FUNCTOR) = struct
+  let ( let+ ) x f = F.map f x [@@inline]
+end
+
 module ApplicativeSyntax (A : APPLICATIVE) = struct
   module Helper = ApplicativeInfix (A)
-
-  let ( let+ ) x f = A.map f x [@@inline]
+  include FunctorSyntax (A)
 
   let ( and+ ) xa ya =
     let open Helper in
@@ -99,22 +102,22 @@ module ApplicativeFunctions (A : APPLICATIVE) = struct
       let+ x = m and+ xs = m' in
       x :: xs
     in
-    List.fold_right k ms (pure [])
+    Stdlib.List.fold_right k ms (pure [])
 
-  let sequence_ ms = List.fold_right ( *> ) ms (pure ())
+  let sequence_ ms = Stdlib.List.fold_right ( *> ) ms (pure ())
 
-  let a_map f ms = sequence (List.map f ms) [@@inline]
+  let a_map f ms = sequence (Stdlib.List.map f ms) [@@inline]
 
-  let a_map_ f ms = sequence_ (List.map f ms) [@@inline]
+  let a_map_ f ms = sequence_ (Stdlib.List.map f ms) [@@inline]
 
   let a_filter f xs =
     let k curr acc =
       let+ flg = f curr and+ ys = acc in
       if flg then curr :: xs else ys
     in
-    List.fold_right k xs (pure [])
+    Stdlib.List.fold_right k xs (pure [])
 
-  let traverse f xs = List.map f xs |> sequence [@@inline]
+  let traverse f xs = Stdlib.List.map f xs |> sequence [@@inline]
 
   let a_for xs f = traverse f xs [@@inline]
 
@@ -133,7 +136,7 @@ module MonadFunctions (M : MONAD) = struct
       let* m' = f z x in
       k m'
     in
-    List.fold_right c ms pure initial
+    Stdlib.List.fold_right c ms pure initial
 
   let m_fold_ f initial ms = m_fold f initial ms *> pure () [@@inline]
 

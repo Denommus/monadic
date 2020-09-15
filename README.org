@@ -8,49 +8,6 @@
   leveraging the new OCaml syntax sugars (~let+~, ~and+~, and ~let*~),
   and in documentation.
 
-** Comparison with [[https://github.com/rgrinberg/ocaml-mtl/][ocaml-mtl]]
-
-*** Feature-set
-
-    For now, MTL (being older) is more feature-complete. On the other
-    hand, its documentation is sub-par, and it hasn't been updated for
-    a long time. Its implementation details are also quite complex.
-
-    Here is a list of monad transformers in each library:
-
-    | Transformer                  | Monadic | MTL |
-    |------------------------------+---------+-----|
-    | Identity                     | [X]     | [X] |
-    | Option (called Maybe in MTL) | [X]     | [X] |
-    | Result (called Error in MTL) | [X]     | [X] |
-    | Reader                       | [X]     | [X] |
-    | State                        | [X]     | [X] |
-    | Writer                       | [X]     | [X] |
-    | RefState                     | [X]     | [ ] |
-    | Continuation                 | [ ]     | [X] |
-    | Ref                          | [ ]     | [X] |
-    | Tree                         | Planned | [X] |
-    | List                         | Planned | [X] |
-    | Zip                          | Planned | [ ] |
-
-**** Some observations:
-
-     RefState in Monadic is simply a State monad implemented
-     internally by using a Ref instead of passing a tuple ahead in the
-     context. Sometimes it might be more efficient as a regular State,
-     but you should validate it yourself before deciding for one or
-     the other.
-
-     Continuation will probably never be implemented in Monadic, given
-     it introduces a lot of complexity on the implementation side of
-     every transformer. I'll consider it in the future if I can think
-     of a simple implementation.
-
-     Ref, from MTL, is a structured State monad where you have a
-     Dictionary where the keys are integers and the values are
-     parameterizable. This seems redundant of a usage of State + lens,
-     and goes against the simplicity of the library.
-
 ** Simplicity
 
    The library will not have any dependencies besides dev-dependencies
@@ -86,3 +43,46 @@
    While this library aims at having simple implementation, the
    documentation should be extensive. People should be comfortable
    with using monad transformers in OCaml.
+
+** Comparison with [[https://github.com/rgrinberg/ocaml-mtl/][ocaml-mtl]]
+
+*** Feature-set
+
+    For now, MTL (being older) is more feature-complete. On the other
+    hand, its documentation is sub-par, and it hasn't been updated for
+    a long time. Its implementation details are also quite complex.
+
+    Here is a list of monad transformers in each library:
+
+    | Transformer                  | Monadic | MTL |
+    |------------------------------+---------+-----|
+    | Identity                     | [X]     | [X] |
+    | Option (called Maybe in MTL) | [X]     | [X] |
+    | Result (called Error in MTL) | [X]     | [X] |
+    | Reader                       | [X]     | [X] |
+    | State                        | [X]     | [X] |
+    | Writer                       | [X]     | [X] |
+    | List                         | [X]     | [X] |
+    | RefState                     | [X]     | [ ] |
+    | Continuation                 | [ ]     | [X] |
+    | Ref                          | [ ]     | [X] |
+    | Tree                         | Planned | [X] |
+    | Zip                          | Planned | [ ] |
+
+**** Some observations:
+
+     RefState in Monadic is simply a State monad implemented
+     internally by using a Ref instead of passing a tuple ahead in the
+     context. Sometimes it might be more efficient as a regular State,
+     but you should validate it yourself before deciding for one or
+     the other.
+
+     Continuation will probably never be implemented in Monadic, given
+     it introduces a lot of complexity on the implementation side of
+     every transformer. I'll consider it in the future if I can think
+     of a simple implementation.
+
+     Ref, from MTL, is a structured State monad where you have a
+     Dictionary where the keys are integers and the values are
+     parameterizable. This seems redundant of a usage of State + lens,
+     and goes against the simplicity of the library.
