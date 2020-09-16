@@ -1,28 +1,90 @@
-module MakeT
-    (Wrapped : Monad.MONAD) (E : sig
+module MakeFT
+    (Wrapped : Monad.FUNCTOR) (E : sig
       type t
     end) =
 struct
+  module WrappedInfix = Monad.FunctorInfix (Wrapped)
+  open WrappedInfix.Syntax
+
   type e = E.t
 
-  module WrappedSyntax = Monad.MonadSyntax (Wrapped)
-  open WrappedSyntax
-
-  module ResultMonad : Monad.MONAD with type 'a t = ('a, e) result Wrapped.t =
-  struct
+  module ResultFunctor :
+    Monad.FUNCTOR with type 'a t = ('a, e) result Wrapped.t = struct
     type 'a t = ('a, e) result Wrapped.t
-
-    let pure v = Ok v |> Wrapped.pure
 
     let map f x =
       let+ v = x in
       Stdlib.Result.map f v
+  end
+
+  include ResultFunctor
+  include Monad.FunctorInfix (ResultFunctor)
+
+  let run m = m [@@inline]
+
+  let lift x = x [@@inline]
+
+  let elevate v =
+    let+ x = v in
+    Ok x
+end
+
+module MakeF = MakeFT (Identity)
+
+module MakeAT
+    (Wrapped : Monad.APPLICATIVE) (E : sig
+      type t
+    end) =
+struct
+  module WrappedInfix = Monad.ApplicativeInfix (Wrapped)
+  open WrappedInfix.Syntax
+  module Functor = MakeFT (Wrapped) (E)
+
+  type e = Functor.e
+
+  module ResultApplicative :
+    Monad.APPLICATIVE with type 'a t = ('a, e) result Wrapped.t = struct
+    include Functor.ResultFunctor
+
+    let pure v = Ok v |> Wrapped.pure
 
     let apply fa xa =
       let+ f = fa and+ x = xa in
       match (f, x) with
       | Ok f', Ok x' -> Ok (f' x')
       | Error e, _ | _, Error e -> Error e
+  end
+
+  include ResultApplicative
+  include Monad.ApplicativeInfix (ResultApplicative)
+
+  let run = Functor.run
+
+  let lift = Functor.lift
+
+  let elevate = Functor.elevate
+
+  let error e = Error e |> Wrapped.pure
+
+  let ok x = Ok x |> Wrapped.pure
+end
+
+module MakeA = MakeAT (Identity)
+
+module MakeT
+    (Wrapped : Monad.MONAD) (E : sig
+      type t
+    end) =
+struct
+  module WrappedInfix = Monad.MonadInfix (Wrapped)
+  open WrappedInfix.Syntax
+  module Applicative = MakeAT (Wrapped) (E)
+
+  type e = Applicative.e
+
+  module ResultMonad : Monad.MONAD with type 'a t = ('a, e) result Wrapped.t =
+  struct
+    include Applicative.ResultApplicative
 
     let join v =
       let* x = v in
@@ -33,18 +95,17 @@ struct
 
   include ResultMonad
 
-  let elevate v =
-    let+ x = v in
-    Ok x
+  let elevate = Applicative.elevate
 
   include Monad.MonadInfix (ResultMonad)
-  module Syntax = Monad.MonadSyntax (ResultMonad)
 
-  let run m = m [@@inline]
+  let run = Applicative.run
 
-  let lift x = x [@@inline]
+  let lift = Applicative.run
 
-  let error x = Error x |> Wrapped.pure
+  let error = Applicative.error
+
+  let ok = Applicative.ok
 end
 
 module Make = MakeT (Identity)

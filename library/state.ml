@@ -1,22 +1,58 @@
+module MakeFT
+    (Wrapped : Monad.FUNCTOR) (S : sig
+      type t
+    end) =
+struct
+  module WrappedInfix = Monad.FunctorInfix (Wrapped)
+  open WrappedInfix.Syntax
+
+  type s = S.t
+
+  module StateFunctor : Monad.FUNCTOR with type 'a t = s -> ('a * s) Wrapped.t =
+  struct
+    type 'a t = s -> ('a * s) Wrapped.t
+
+    let map f x s =
+      let+ result, s' = x s in
+      (f result, s')
+  end
+
+  include StateFunctor
+
+  let elevate w s =
+    let+ x = w in
+    (x, s)
+
+  include Monad.FunctorInfix (StateFunctor)
+
+  let run m ~init = m init [@@inline]
+
+  let lift x = x [@@inline]
+end
+
+module MakeF = MakeFT (Identity)
+
+(* State requires Monad even for its Applicative interface,
+   so implementing MakeAT for it would be a waste of time *)
+
 module MakeT
     (Wrapped : Monad.MONAD) (S : sig
       type t
     end) =
 struct
-  type s = S.t
+  module WrappedInfix = Monad.MonadInfix (Wrapped)
+  open WrappedInfix.Syntax
+  module Functor = MakeFT (Wrapped) (S)
 
-  module WrappedSyntax = Monad.MonadSyntax (Wrapped)
-  open WrappedSyntax
+  type s = Functor.s
 
   module StateMonad : Monad.MONAD with type 'a t = s -> ('a * s) Wrapped.t =
   struct
+    include Functor.StateFunctor
+
     type 'a t = s -> ('a * s) Wrapped.t
 
     let pure v s = Wrapped.pure (v, s)
-
-    let map f x s =
-      let+ result, s' = x s in
-      (f result, s')
 
     let apply fa sa s =
       let* f, result1 = fa s in
@@ -33,24 +69,19 @@ struct
   (* Adding all the monadic functions to the outer scope *)
   include StateMonad
 
-  let elevate w s =
-    let+ x = w in
-    (x, s)
+  let elevate = Functor.elevate
+
+  let lift = Functor.lift
+
+  let run = Functor.run
 
   (* Adding the infix functions *)
   include Monad.MonadInfix (StateMonad)
-
-  (* Adding the syntax extensions as an internal module *)
-  module Syntax = Monad.MonadSyntax (StateMonad)
 
   (* The State functions themselves *)
   let get s = Wrapped.pure (s, s)
 
   let put s _ = Wrapped.pure ((), s)
-
-  let run m ~init = m init
-
-  let lift x = x [@@inline]
 end
 
 module Make = MakeT (Identity)

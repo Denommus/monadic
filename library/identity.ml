@@ -14,4 +14,3 @@ end
 
 include IdentityMonad
 include Monad.MonadInfix (IdentityMonad)
-module Syntax = Monad.MonadSyntax (IdentityMonad)

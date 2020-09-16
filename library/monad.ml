@@ -24,38 +24,76 @@ end
 
 module FunctorInfix (F : FUNCTOR) = struct
   let ( <$> ) f xa = F.map f xa [@@inline]
+
+  module Syntax = struct
+    let ( let+ ) x f = F.map f x [@@inline]
+  end
 end
 
 module ApplicativeInfix (A : APPLICATIVE) = struct
-  include FunctorInfix (A)
+  module InfixF = FunctorInfix (A)
+  include InfixF
 
   let ( <*> ) fa xa = A.apply fa xa [@@inline]
+
+  module Syntax = struct
+    include InfixF.Syntax
+
+    let ( and+ ) xa ya = (fun x y -> (x, y)) <$> xa <*> ya [@@inline]
+  end
 end
 
 module MonadInfix (M : MONAD) = struct
-  include ApplicativeInfix (M)
+  module InfixA = ApplicativeInfix (M)
+  include InfixA
 
   let ( >>= ) m f = M.bind m f [@@inline]
+
+  module Syntax = struct
+    include InfixA.Syntax
+
+    let ( let* ) m f = M.bind m f [@@inline]
+  end
 end
 
-module FunctorSyntax (F : FUNCTOR) = struct
-  let ( let+ ) x f = F.map f x [@@inline]
+module type MAKE_F = sig
+  include FUNCTOR
+
+  val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
+
+  module Syntax : sig
+    val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
+  end
 end
 
-module ApplicativeSyntax (A : APPLICATIVE) = struct
-  module Helper = ApplicativeInfix (A)
-  include FunctorSyntax (A)
+module type MAKE_F_T = sig
+  type 'a wrapped
 
-  let ( and+ ) xa ya =
-    let open Helper in
-    (fun x y -> (x, y)) <$> xa <*> ya
-    [@@inline]
+  include MAKE_F
+
+  val elevate : 'a wrapped -> 'a t
 end
 
-module MonadSyntax (M : MONAD) = struct
-  include ApplicativeSyntax (M)
+module type MAKE_A = sig
+  include APPLICATIVE
 
-  let ( let* ) m f = M.bind m f [@@inline]
+  val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
+
+  val ( <*> ) : ('a -> 'b) t -> 'a t -> 'b t
+
+  module Syntax : sig
+    val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
+
+    val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
+  end
+end
+
+module type MAKE_A_T = sig
+  type 'a wrapped
+
+  include MAKE_A
+
+  val elevate : 'a wrapped -> 'a t
 end
 
 module type MAKE = sig
@@ -86,8 +124,8 @@ end
 
 module ApplicativeFunctions (A : APPLICATIVE) = struct
   open A
-
-  open ApplicativeSyntax (A)
+  module Infix = ApplicativeInfix (A)
+  open Infix.Syntax
 
   let ( *> ) m m' =
     let+ _ = m and+ x' = m' in
@@ -126,8 +164,8 @@ end
 
 module MonadFunctions (M : MONAD) = struct
   open M
-
-  open MonadSyntax (M)
+  module Infix = MonadInfix (M)
+  open Infix.Syntax
 
   open ApplicativeFunctions (M)
 

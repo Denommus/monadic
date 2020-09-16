@@ -6,24 +6,76 @@ module type MONOID = sig
   val append : t -> t -> t
 end
 
-module MakeT (Wrapped : Monad.MONAD) (W : MONOID) = struct
+module MakeFT (Wrapped : Monad.FUNCTOR) (W : MONOID) = struct
+  module WrappedInfix = Monad.FunctorInfix (Wrapped)
+  open WrappedInfix.Syntax
+
   type w = W.t
 
-  module WrappedSyntax = Monad.MonadSyntax (Wrapped)
-  open WrappedSyntax
-
-  module WriterMonad : Monad.MONAD with type 'a t = ('a * w) Wrapped.t = struct
+  module WriterFunctor : Monad.FUNCTOR with type 'a t = ('a * w) Wrapped.t =
+  struct
     type 'a t = ('a * w) Wrapped.t
-
-    let pure v = Wrapped.pure (v, W.empty)
 
     let map f x =
       let+ v, w = x in
       (f v, w)
+  end
+
+  include WriterFunctor
+  include Monad.FunctorInfix (WriterFunctor)
+
+  let run m = m [@@inline]
+
+  let lift x = x [@@inline]
+
+  let elevate v =
+    let+ x = v in
+    (x, W.empty)
+end
+
+module MakeF = MakeFT (Identity)
+
+module MakeAT (Wrapped : Monad.APPLICATIVE) (W : MONOID) = struct
+  module WrappedInfix = Monad.ApplicativeInfix (Wrapped)
+  open WrappedInfix.Syntax
+  module Functor = MakeFT (Wrapped) (W)
+
+  type w = Functor.w
+
+  module WriterApplicative :
+    Monad.APPLICATIVE with type 'a t = ('a * w) Wrapped.t = struct
+    include Functor.WriterFunctor
+
+    let pure v = Wrapped.pure (v, W.empty)
 
     let apply fa xa =
       let+ f, w1 = fa and+ x, w2 = xa in
       (f x, W.append w1 w2)
+  end
+
+  include WriterApplicative
+  include Monad.ApplicativeInfix (WriterApplicative)
+
+  let run = Functor.run
+
+  let lift = Functor.lift
+
+  let elevate = Functor.elevate
+
+  let tell w = ((), w) |> Wrapped.pure
+end
+
+module MakeA = MakeAT (Identity)
+
+module MakeT (Wrapped : Monad.MONAD) (W : MONOID) = struct
+  module WrappedInfix = Monad.MonadInfix (Wrapped)
+  open WrappedInfix.Syntax
+  module Applicative = MakeAT (Wrapped) (W)
+
+  type w = Applicative.w
+
+  module WriterMonad : Monad.MONAD with type 'a t = ('a * w) Wrapped.t = struct
+    include Applicative.WriterApplicative
 
     let bind m f =
       let* x1, w1 = m in
@@ -34,19 +86,15 @@ module MakeT (Wrapped : Monad.MONAD) (W : MONOID) = struct
   end
 
   include WriterMonad
-
-  let elevate v =
-    let+ x = v in
-    (x, W.empty)
-
   include Monad.MonadInfix (WriterMonad)
-  module Syntax = Monad.MonadSyntax (WriterMonad)
+
+  let run = Applicative.run
+
+  let lift = Applicative.lift
+
+  let elevate = Applicative.elevate
 
   let tell w = Wrapped.pure ((), w)
-
-  let run m = m [@@inline]
-
-  let lift x = x [@@inline]
 end
 
 module Make = MakeT (Identity)

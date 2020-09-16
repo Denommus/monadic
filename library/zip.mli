@@ -1,43 +1,39 @@
-(* Zip is not actually a monad transformer. It's an applicative transformer.
-   That means you cannot use it as a parameter for another MakeT.
-
-   But you CAN use other transformers as parameter for Zip.
- *)
-
-module MakeT : functor
-  (Wrapped : Monad.MONAD)
+module MakeFT : functor
+  (Wrapped : Monad.FUNCTOR)
   -> sig
-  include Monad.APPLICATIVE
-
-  val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
-
-  val ( <*> ) : ('a -> 'b) t -> 'a t -> 'b t
-
-  module Syntax : sig
-    val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
-
-    val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
-  end
+  include Monad.MAKE_F_T with type 'a wrapped := 'a Wrapped.t
 
   val run : 'a t -> 'a list Wrapped.t
 
   val lift : 'a list Wrapped.t -> 'a t
-
-  val elevate : 'a Wrapped.t -> 'a t
 end
 with type 'a t = 'a list Wrapped.t
 
-module Make : sig
-  include Monad.APPLICATIVE
+module MakeF : sig
+  include Monad.MAKE_F
 
-  val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
+  val run : 'a t -> 'a list
 
-  val ( <*> ) : ('a -> 'b) t -> 'a t -> 'b t
+  val lift : 'a list -> 'a t
+end
+with type 'a t = 'a list
 
-  module Syntax : sig
-    val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
+module MakeAT : functor
+  (Wrapped : Monad.MONAD)
+  -> sig
+  include Monad.MAKE_A_T with type 'a wrapped := 'a Wrapped.t
 
-    val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
-  end
+  val run : 'a t -> 'a list Wrapped.t
+
+  val lift : 'a list Wrapped.t -> 'a t
+end
+with type 'a t = 'a list Wrapped.t
+
+module MakeA : sig
+  include Monad.MAKE_A
+
+  val run : 'a t -> 'a list
+
+  val lift : 'a list -> 'a t
 end
 with type 'a t = 'a list
