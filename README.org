@@ -64,10 +64,10 @@
     | Writer                       | [X]     | [X] |
     | List                         | [X]     | [X] |
     | RefState                     | [X]     | [ ] |
+    | Zip                          | [X]     | [ ] |
     | Continuation                 | [ ]     | [X] |
     | Ref                          | [ ]     | [X] |
     | Tree                         | Planned | [X] |
-    | Zip                          | Planned | [ ] |
 
 **** Some observations:
 
