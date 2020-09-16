@@ -14,13 +14,17 @@ module MakeFT (Wrapped : Monad.FUNCTOR) = struct
   include OptionFunctor
   include Monad.FunctorInfix (OptionFunctor)
 
-  let run m = m [@@inline]
+  module Utils = struct
+    let run m = m [@@inline]
 
-  let lift x = x [@@inline]
+    let lift x = x [@@inline]
 
-  let elevate v =
-    let+ x = v in
-    Some x
+    let elevate v =
+      let+ x = v in
+      Some x
+  end
+
+  include Utils
 end
 
 module MakeF = MakeFT (Identity)
@@ -44,15 +48,15 @@ module MakeAT (Wrapped : Monad.APPLICATIVE) = struct
   include OptionApplicative
   include Monad.ApplicativeInfix (OptionApplicative)
 
-  let run = Functor.run
+  module Utils = struct
+    include Functor.Utils
 
-  let lift = Functor.lift
+    let none _ = Wrapped.pure None
 
-  let elevate = Functor.elevate
+    let some x = Some x |> Wrapped.pure
+  end
 
-  let none _ = Wrapped.pure None
-
-  let some x = Some x |> Wrapped.pure
+  include Utils
 end
 
 module MakeA = MakeAT (Identity)
@@ -74,16 +78,7 @@ module MakeT (Wrapped : Monad.MONAD) = struct
 
   include OptionMonad
   include Monad.MonadInfix (OptionMonad)
-
-  let run = Applicative.run
-
-  let lift = Applicative.lift
-
-  let elevate = Applicative.elevate
-
-  let none = Applicative.none
-
-  let some = Applicative.some
+  include Applicative.Utils
 end
 
 module Make = MakeT (Identity)

@@ -20,13 +20,17 @@ struct
   include ResultFunctor
   include Monad.FunctorInfix (ResultFunctor)
 
-  let run m = m [@@inline]
+  module Utils = struct
+    let run m = m [@@inline]
 
-  let lift x = x [@@inline]
+    let lift x = x [@@inline]
 
-  let elevate v =
-    let+ x = v in
-    Ok x
+    let elevate v =
+      let+ x = v in
+      Ok x
+  end
+
+  include Utils
 end
 
 module MakeF = MakeFT (Identity)
@@ -58,15 +62,15 @@ struct
   include ResultApplicative
   include Monad.ApplicativeInfix (ResultApplicative)
 
-  let run = Functor.run
+  module Utils = struct
+    include Functor.Utils
 
-  let lift = Functor.lift
+    let error e = Error e |> Wrapped.pure
 
-  let elevate = Functor.elevate
+    let ok x = Ok x |> Wrapped.pure
+  end
 
-  let error e = Error e |> Wrapped.pure
-
-  let ok x = Ok x |> Wrapped.pure
+  include Utils
 end
 
 module MakeA = MakeAT (Identity)
@@ -94,18 +98,8 @@ struct
   end
 
   include ResultMonad
-
-  let elevate = Applicative.elevate
-
   include Monad.MonadInfix (ResultMonad)
-
-  let run = Applicative.run
-
-  let lift = Applicative.run
-
-  let error = Applicative.error
-
-  let ok = Applicative.ok
+  include Applicative.Utils
 end
 
 module Make = MakeT (Identity)

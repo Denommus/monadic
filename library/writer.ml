@@ -24,13 +24,17 @@ module MakeFT (Wrapped : Monad.FUNCTOR) (W : MONOID) = struct
   include WriterFunctor
   include Monad.FunctorInfix (WriterFunctor)
 
-  let run m = m [@@inline]
+  module Utils = struct
+    let run m = m [@@inline]
 
-  let lift x = x [@@inline]
+    let lift x = x [@@inline]
 
-  let elevate v =
-    let+ x = v in
-    (x, W.empty)
+    let elevate v =
+      let+ x = v in
+      (x, W.empty)
+  end
+
+  include Utils
 end
 
 module MakeF = MakeFT (Identity)
@@ -56,13 +60,13 @@ module MakeAT (Wrapped : Monad.APPLICATIVE) (W : MONOID) = struct
   include WriterApplicative
   include Monad.ApplicativeInfix (WriterApplicative)
 
-  let run = Functor.run
+  module Utils = struct
+    include Functor.Utils
 
-  let lift = Functor.lift
+    let tell w = ((), w) |> Wrapped.pure
+  end
 
-  let elevate = Functor.elevate
-
-  let tell w = ((), w) |> Wrapped.pure
+  include Utils
 end
 
 module MakeA = MakeAT (Identity)
@@ -87,14 +91,7 @@ module MakeT (Wrapped : Monad.MONAD) (W : MONOID) = struct
 
   include WriterMonad
   include Monad.MonadInfix (WriterMonad)
-
-  let run = Applicative.run
-
-  let lift = Applicative.lift
-
-  let elevate = Applicative.elevate
-
-  let tell w = Wrapped.pure ((), w)
+  include Applicative.Utils
 end
 
 module Make = MakeT (Identity)

@@ -18,16 +18,19 @@ struct
   end
 
   include StateFunctor
-
-  let elevate w s =
-    let+ x = w in
-    (x, s)
-
   include Monad.FunctorInfix (StateFunctor)
 
-  let run m ~init = m init [@@inline]
+  module Utils = struct
+    let elevate w s =
+      let+ x = w in
+      (x, s)
 
-  let lift x = x [@@inline]
+    let run m ~init = m init [@@inline]
+
+    let lift x = x [@@inline]
+  end
+
+  include Utils
 end
 
 module MakeF = MakeFT (Identity)
@@ -69,14 +72,9 @@ struct
   (* Adding all the monadic functions to the outer scope *)
   include StateMonad
 
-  let elevate = Functor.elevate
-
-  let lift = Functor.lift
-
-  let run = Functor.run
-
   (* Adding the infix functions *)
   include Monad.MonadInfix (StateMonad)
+  include Functor.Utils
 
   (* The State functions themselves *)
   let get s = Wrapped.pure (s, s)

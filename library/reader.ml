@@ -20,11 +20,15 @@ struct
   include ReaderFunctor
   include Monad.FunctorInfix (ReaderFunctor)
 
-  let run m ~init = m init [@@inline]
+  module Utils = struct
+    let run m ~init = m init [@@inline]
 
-  let lift x = x [@@inline]
+    let lift x = x [@@inline]
 
-  let elevate v _ = v
+    let elevate v _ = v
+  end
+
+  include Utils
 end
 
 module MakeF = MakeFT (Identity)
@@ -54,13 +58,13 @@ struct
   include ReaderApplicative
   include Monad.ApplicativeInfix (ReaderApplicative)
 
-  let run = Functor.run
+  module Utils = struct
+    include Functor.Utils
 
-  let lift = Functor.lift
+    let peek r = Wrapped.pure r
+  end
 
-  let elevate = Functor.elevate
-
-  let peek r = Wrapped.pure r
+  include Utils
 end
 
 module MakeA = MakeAT (Identity)
@@ -88,14 +92,7 @@ struct
 
   include ReaderMonad
   include Monad.MonadInfix (ReaderMonad)
-
-  let elevate = Applicative.elevate
-
-  let lift = Applicative.lift
-
-  let run = Applicative.run
-
-  let peek = Applicative.peek
+  include Applicative.Utils
 end
 
 module Make = MakeT (Identity)
