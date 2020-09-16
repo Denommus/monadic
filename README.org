@@ -79,6 +79,10 @@
      ~Monadic.RefState.MakeAT (Foo : Monadic.Monad.APPLICATIVE)~,
      while State requires the wrapped type to be a ~MONAD~.
 
+     Zip is an applicative transformer, and doesn't have a monadic
+     interface. It's similar to List, but it acts on zips of the two
+     lists, instead of expanding like lists do.
+
      Continuation will probably never be implemented in Monadic, given
      it introduces a lot of complexity on the implementation side of
      every transformer. I'll consider it in the future if I can think
