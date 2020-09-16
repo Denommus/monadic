@@ -90,6 +90,6 @@
      and goes against the simplicity of the library.
 
      Tree is also not being implemented, given that it doesn't have a
-     Stdlib implementation, and it's better for the use to implement
+     Stdlib implementation, and it's better for the user to implement
      it as an extension to the library, using whatever Tree library
      they want to use.
