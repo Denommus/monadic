@@ -22,6 +22,8 @@ struct
     let apply fa xa = A1.apply (A1.map A2.apply fa) xa
   end
 
+  let elevate x = A1.map A2.pure x
+
   include ComposeApplicative
   module Infix = Monad.ApplicativeInfix (ComposeApplicative)
   include Infix

@@ -22,6 +22,8 @@ module ComposeApplicative : functor
 
   val ( <*> ) : ('a -> 'b) t -> 'a t -> 'b t
 
+  val elevate : 'a A1.t -> 'a t
+
   module Syntax : sig
     val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
 
