@@ -62,14 +62,21 @@ module ComposingTest = struct
   module ReaderOption = Monadic.Composition.ComposeApplicative (Reader) (Option)
 
   let reader_option =
+    let open ReaderOption in
     let open ReaderOption.Syntax in
-    let+ foo = ReaderOption.elevate Reader.peek
-    and+ bar = Reader.pure (Some "10") in
+    let+ foo = elevate Reader.peek
+    and+ bar = pure "10" in
+    foo ^ bar
+
+  let reader_option2 =
+    let open ReaderOption.Syntax in
+    let+ foo = reader_option
+    and+ bar = Option.none () |> Reader.pure in
     foo ^ bar
 
   let test _ =
-    let result = Reader.run reader_option ~init:"Blah" in
-    assert_equal (Some "Blah10") result
+    assert_equal (Some "Blah10") @@ Reader.run reader_option ~init:"Blah";
+    assert_equal None @@ Reader.run reader_option2 ~init:"Bleh";
 end
 
 let suite =
