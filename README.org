@@ -76,9 +76,7 @@
      internally by using a Ref instead of passing a tuple ahead in the
      context. Sometimes it might be more efficient as a regular State,
      but you should validate it yourself before deciding for one or
-     the other. One advantage of RefState is that you can do
-     ~Monadic.RefState.MakeAT (Foo : Monadic.Monad.APPLICATIVE)~,
-     while State requires the wrapped type to be a ~MONAD~.
+     the other.
 
      Zip is an applicative transformer, and doesn't have a monadic
      interface. It's similar to List, but it acts on zips of the two
