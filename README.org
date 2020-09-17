@@ -35,8 +35,9 @@
    The new OCaml syntax sugars, perhaps inspired by Haskell's ~do~
    syntax and F#'s computational expressions, helps making monadic
    code look a lot prettier. The sugar was the inspiration for this
-   library even existing, so we WILL NOT support ReasonML,
-   BuckleScript, or ReScript while they do not support OCaml 4.08.
+   library even existing. ReasonML and BuckleScript already support
+   OCaml 4.08, but ReScript still doesn't. So the library will not
+   work on ReScript.
 
 ** Documentation
 
