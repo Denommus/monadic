@@ -1,7 +1,7 @@
-module ComposeFunctor :
-functor (F1 : Monad.FUNCTOR) (F2 : Monad.FUNCTOR)
-->
-sig
+module ComposeFunctor : functor
+  (F1 : Monad.FUNCTOR)
+  (F2 : Monad.FUNCTOR)
+  -> sig
   include Monad.FUNCTOR
 
   val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
@@ -27,4 +27,5 @@ module ComposeApplicative : functor
 
     val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
   end
-end with type 'a t = 'a A2.t A1.t
+end
+with type 'a t = 'a A2.t A1.t

@@ -10,7 +10,8 @@ module ComposeFunctor (F1 : Monad.FUNCTOR) (F2 : Monad.FUNCTOR) = struct
   include Infix
 end
 
-module ComposeApplicative (A1 : Monad.APPLICATIVE) (A2 : Monad.APPLICATIVE)  = struct
+module ComposeApplicative (A1 : Monad.APPLICATIVE) (A2 : Monad.APPLICATIVE) =
+struct
   module Functor = ComposeFunctor (A1) (A2)
 
   module ComposeApplicative = struct
