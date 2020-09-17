@@ -56,6 +56,17 @@ module ListTest = struct
     assert_equal [ 6; 3; 30; 8; 4; 40; 10; 5; 50 ] list
 end
 
+module ZipTest = struct
+  open Monadic.Zip.Syntax
+
+  let test _ =
+    let list =
+      let+ x = [ 3; 4; 5 ] and+ y = [ 2; 1; 10 ] in
+      x * y
+    in
+    assert_equal [6; 4; 50] list
+end
+
 module ComposingTest = struct
   module Reader = Monadic.Reader.Make (String)
   module Option = Monadic.Option.Make
@@ -85,6 +96,7 @@ let suite =
          "test_transform" >:: ReaderWriterTest.test;
          "test_ref_state" >:: RefStateTest.test;
          "test_list" >:: ListTest.test;
+         "test_zip" >:: ZipTest.test;
          "test_composing" >:: ComposingTest.test;
        ]
 
