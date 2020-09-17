@@ -120,6 +120,18 @@ module ApplicativeFunctions (A : APPLICATIVE) = struct
   let a_for xs f = traverse f xs [@@inline]
 
   let a_for_ xs f = a_for xs f *> pure () [@@inline]
+
+  let lift2 fa aa ba =
+    let+ f = fa and+ a = aa and+ b = ba in
+    f a b
+
+  let lift3 fa aa ba ca =
+    let+ f = fa and+ a = aa and+ b = ba and+ c = ca in
+    f a b c
+
+  let lift4 fa aa ba ca da =
+    let+ f = fa and+ a = aa and+ b = ba and+ c = ca and+ d = da in
+    f a b c d
 end
 
 module MonadFunctions (M : MONAD) = struct
