@@ -5,7 +5,7 @@ module MakeT : functor
 
   val run : 'a t -> 'a option Wrapped.t
 
-  val lift : 'a option Wrapped.t -> 'a t
+  val create : 'a option Wrapped.t -> 'a t
 end
 with type 'a t = 'a option Wrapped.t
 
@@ -14,7 +14,7 @@ module Make : sig
 
   val run : 'a t -> 'a option
 
-  val lift : 'a option -> 'a t
+  val create : 'a option -> 'a t
 
   val none : unit -> 'a t
 end

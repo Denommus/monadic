@@ -14,7 +14,7 @@ module MakeT : functor
 
   val run : 'a t -> init:s -> 'a Wrapped.t * s
 
-  val lift : (s -> ('a * s) Wrapped.t) -> 'a t
+  val create : (s -> ('a * s) Wrapped.t) -> 'a t
 end
 with type s = S.t
 
@@ -33,6 +33,6 @@ module Make : functor
 
   val run : 'a t -> init:s -> 'a * s
 
-  val lift : (s -> 'a * s) -> 'a t
+  val create : (s -> 'a * s) -> 'a t
 end
 with type s = S.t

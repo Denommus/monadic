@@ -41,7 +41,7 @@ struct
 
   let run m = m [@@inline]
 
-  let lift x = x [@@inline]
+  let create x = x [@@inline]
 
   let error x = Error x |> Wrapped.pure
 end

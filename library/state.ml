@@ -49,7 +49,7 @@ struct
 
   let run m ~init = m init
 
-  let lift x = x [@@inline]
+  let create x = x [@@inline]
 end
 
 module Make = MakeT (Identity)

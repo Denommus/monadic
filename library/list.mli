@@ -5,7 +5,7 @@ module MakeT : functor
 
   val run : 'a t -> 'a list Wrapped.t
 
-  val lift : 'a list Wrapped.t -> 'a t
+  val create : 'a list Wrapped.t -> 'a t
 end
 with type 'a t = 'a list Wrapped.t
 
@@ -14,6 +14,6 @@ module Make : sig
 
   val run : 'a t -> 'a list
 
-  val lift : 'a list -> 'a t
+  val create : 'a list -> 'a t
 end
 with type 'a t = 'a list

@@ -30,8 +30,8 @@ struct
 
   module WrappedInfix = Monad.MonadInfix (Wrapped)
 
-  let lift f =
-    lift @@ fun r ->
+  let create f =
+    create @@ fun r ->
     let open WrappedInfix.Syntax in
     let+ result, new_state = f !r in
     r := new_state;

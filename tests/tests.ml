@@ -37,7 +37,7 @@ module RefStateTest = struct
       let open RefState in
       let+ foo = get
       and+ _ = put "Bar"
-      and+ _ = lift (fun s -> ("", s ^ "Blah")) in
+      and+ _ = create (fun s -> ("", s ^ "Blah")) in
       foo
     in
     let result, state = RefState.run state ~init:"Foo" in

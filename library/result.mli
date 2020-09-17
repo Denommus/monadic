@@ -10,7 +10,7 @@ module MakeT : functor
 
   val run : 'a t -> ('a, e) result Wrapped.t
 
-  val lift : ('a, e) result Wrapped.t -> 'a t
+  val create : ('a, e) result Wrapped.t -> 'a t
 end
 with type e = E.t
 with type 'a t = ('a, E.t) result Wrapped.t
@@ -26,7 +26,7 @@ module Make : functor
 
   val run : 'a t -> ('a, e) result
 
-  val lift : ('a, e) result -> 'a t
+  val create : ('a, e) result -> 'a t
 
   val error : e -> 'a t
 end

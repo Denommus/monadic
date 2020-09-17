@@ -45,7 +45,7 @@ module MakeT (Wrapped : Monad.MONAD) (W : MONOID) = struct
 
   let run m = m [@@inline]
 
-  let lift x = x [@@inline]
+  let create x = x [@@inline]
 end
 
 module Make = MakeT (Identity)
