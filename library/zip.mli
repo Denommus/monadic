@@ -1,39 +1,11 @@
-module MakeFT : functor
-  (Wrapped : Monad.FUNCTOR)
-  -> sig
-  include Monad.MAKE_F_T with type 'a wrapped := 'a Wrapped.t
+include Monad.APPLICATIVE with type 'a t = 'a list
 
-  val run : 'a t -> 'a list Wrapped.t
+val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
 
-  val lift : 'a list Wrapped.t -> 'a t
+val ( <*> ) : ('a -> 'b) t -> 'a t -> 'b t
+
+module Syntax : sig
+  val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
+
+  val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
 end
-with type 'a t = 'a list Wrapped.t
-
-module MakeF : sig
-  include Monad.MAKE_F
-
-  val run : 'a t -> 'a list
-
-  val lift : 'a list -> 'a t
-end
-with type 'a t = 'a list
-
-module MakeAT : functor
-  (Wrapped : Monad.MONAD)
-  -> sig
-  include Monad.MAKE_A_T with type 'a wrapped := 'a Wrapped.t
-
-  val run : 'a t -> 'a list Wrapped.t
-
-  val lift : 'a list Wrapped.t -> 'a t
-end
-with type 'a t = 'a list Wrapped.t
-
-module MakeA : sig
-  include Monad.MAKE_A
-
-  val run : 'a t -> 'a list
-
-  val lift : 'a list -> 'a t
-end
-with type 'a t = 'a list

@@ -56,46 +56,6 @@ module MonadInfix (M : MONAD) = struct
   end
 end
 
-module type MAKE_F = sig
-  include FUNCTOR
-
-  val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
-
-  module Syntax : sig
-    val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
-  end
-end
-
-module type MAKE_F_T = sig
-  type 'a wrapped
-
-  include MAKE_F
-
-  val elevate : 'a wrapped -> 'a t
-end
-
-module type MAKE_A = sig
-  include APPLICATIVE
-
-  val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
-
-  val ( <*> ) : ('a -> 'b) t -> 'a t -> 'b t
-
-  module Syntax : sig
-    val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
-
-    val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
-  end
-end
-
-module type MAKE_A_T = sig
-  type 'a wrapped
-
-  include MAKE_A
-
-  val elevate : 'a wrapped -> 'a t
-end
-
 module type MAKE = sig
   include MONAD
 

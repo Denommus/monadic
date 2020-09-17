@@ -1,43 +1,15 @@
-module MakeFT (Wrapped : Monad.FUNCTOR) = struct
-  module WrappedInfix = Monad.FunctorInfix (Wrapped)
+module MakeT (Wrapped : Monad.MONAD) = struct
+  module WrappedInfix = Monad.MonadInfix (Wrapped)
   open WrappedInfix.Syntax
 
-  module ListFunctor : Monad.FUNCTOR with type 'a t = 'a list Wrapped.t = struct
+  module ListMonad : Monad.MONAD with type 'a t = 'a list Wrapped.t = struct
     type 'a t = 'a list Wrapped.t
+
+    let pure v = [ v ] |> Wrapped.pure
 
     let map f x =
       let+ v = x in
       Stdlib.List.map f v
-  end
-
-  include ListFunctor
-  include Monad.FunctorInfix (ListFunctor)
-
-  module Utils = struct
-    let run m = m [@@inline]
-
-    let lift x = x [@@inline]
-
-    let elevate v =
-      let+ x = v in
-      [ x ]
-  end
-
-  include Utils
-end
-
-module MakeF = MakeFT (Identity)
-
-module MakeAT (Wrapped : Monad.APPLICATIVE) = struct
-  module WrappedInfix = Monad.ApplicativeInfix (Wrapped)
-  open WrappedInfix.Syntax
-  module Functor = MakeFT (Wrapped)
-
-  module ListApplicative :
-    Monad.APPLICATIVE with type 'a t = 'a list Wrapped.t = struct
-    include Functor.ListFunctor
-
-    let pure v = [ v ] |> Wrapped.pure
 
     let apply fa xa =
       let+ fs = fa and+ xs = xa in
@@ -46,23 +18,6 @@ module MakeAT (Wrapped : Monad.APPLICATIVE) = struct
         l1 @ acc
       in
       Stdlib.List.fold_right accum fs []
-  end
-
-  include ListApplicative
-  include Monad.ApplicativeInfix (ListApplicative)
-  module Utils = Functor.Utils
-  include Utils
-end
-
-module MakeA = MakeAT (Identity)
-
-module MakeT (Wrapped : Monad.MONAD) = struct
-  module WrappedInfix = Monad.MonadInfix (Wrapped)
-  open WrappedInfix.Syntax
-  module Applicative = MakeAT (Wrapped)
-
-  module ListMonad : Monad.MONAD with type 'a t = 'a list Wrapped.t = struct
-    include Applicative.ListApplicative
 
     let sequence ms =
       let open Monad.ApplicativeFunctions (Wrapped) in
@@ -77,8 +32,16 @@ module MakeT (Wrapped : Monad.MONAD) = struct
   end
 
   include ListMonad
+
+  let elevate v =
+    let+ x = v in
+    [ x ]
+
   include Monad.MonadInfix (ListMonad)
-  include Applicative.Utils
+
+  let run m = m [@@inline]
+
+  let lift x = x [@@inline]
 end
 
 module Make = MakeT (Identity)
