@@ -36,7 +36,7 @@
    syntax and F#'s computational expressions, helps making monadic
    code look a lot prettier. The sugar was the inspiration for this
    library even existing, so we WILL NOT support ReasonML,
-   BuckleScript, or ReScript while they do not support OCaml 4.10.
+   BuckleScript, or ReScript while they do not support OCaml 4.08.
 
 ** Documentation
 

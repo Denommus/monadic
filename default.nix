@@ -15,7 +15,7 @@ ocamlPackages.buildDunePackage {
   useDune2 = true;
   version = "0.1";
   src = gitignoreSource ./.;
-  minimumOCamlVersion = "4.10";
+  minimumOCamlVersion = "4.08";
   buildInputs = with ocamlPackages; [
     utop
     nodePackages.ocaml-language-server
