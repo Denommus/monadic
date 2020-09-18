@@ -66,6 +66,8 @@
     | List                         | [X]     | [X] |
     | RefState                     | [X]     | [ ] |
     | Zip                          | [X]     | [ ] |
+    | Array                        | [X]     | [ ] |
+    | ZipArray                     | [X]     | [ ] |
     | Continuation                 | [ ]     | [X] |
     | Ref                          | [ ]     | [X] |
     | Tree                         | [ ]     | [X] |
