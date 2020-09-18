@@ -104,6 +104,15 @@ module ApplicativeFunctions (A : APPLICATIVE) = struct
 
   let sequence_ ms = Stdlib.List.fold_right ( *> ) ms (pure ())
 
+  let sequence_array ms =
+    let k m m' =
+      let+ x = m and+ xs = m' in
+      Stdlib.Array.append [|x|] xs
+    in
+    Stdlib.Array.fold_right k ms (pure [||])
+
+  let sequence_array_ ms = Stdlib.Array.fold_right ( *> ) ms (pure ())
+
   let a_map f ms = sequence (Stdlib.List.map f ms) [@@inline]
 
   let a_map_ f ms = sequence_ (Stdlib.List.map f ms) [@@inline]
@@ -132,6 +141,10 @@ module ApplicativeFunctions (A : APPLICATIVE) = struct
   let lift4 fa aa ba ca da =
     let+ f = fa and+ a = aa and+ b = ba and+ c = ca and+ d = da in
     f a b c d
+
+  let m_if condition action = if condition then action else pure ()
+
+  let m_unless condition = m_if (not condition)
 end
 
 module MonadFunctions (M : MONAD) = struct
