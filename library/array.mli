@@ -6,6 +6,12 @@ module MakeT : functor
   val run : 'a t -> 'a array Wrapped.t
 
   val create : 'a array Wrapped.t -> 'a t
+
+  val choice : 'a t -> 'a t -> 'a t
+
+  val empty : unit -> 'a t
+
+  val ( <|> ) : 'a t -> 'a t -> 'a t
 end
 with type 'a t = 'a array Wrapped.t
 
@@ -15,5 +21,11 @@ module Make : sig
   val run : 'a t -> 'a array
 
   val create : 'a array -> 'a t
+
+  val choice : 'a t -> 'a t -> 'a t
+
+  val empty : unit -> 'a t
+
+  val ( <|> ) : 'a t -> 'a t -> 'a t
 end
 with type 'a t = 'a array

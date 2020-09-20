@@ -64,7 +64,7 @@ module ZipTest = struct
       let+ x = [ 3; 4; 5 ] and+ y = [ 2; 1; 10 ] in
       x * y
     in
-    assert_equal [6; 4; 50] list
+    assert_equal [ 6; 4; 50 ] list
 end
 
 module ComposingTest = struct
@@ -75,19 +75,17 @@ module ComposingTest = struct
   let reader_option =
     let open ReaderOption in
     let open ReaderOption.Syntax in
-    let+ foo = elevate Reader.peek
-    and+ bar = pure "10" in
+    let+ foo = elevate Reader.peek and+ bar = pure "10" in
     foo ^ bar
 
   let reader_option2 =
     let open ReaderOption.Syntax in
-    let+ foo = reader_option
-    and+ bar = Option.none () |> Reader.pure in
+    let+ foo = reader_option and+ bar = Option.none () |> Reader.pure in
     foo ^ bar
 
   let test _ =
     assert_equal (Some "Blah10") @@ Reader.run reader_option ~init:"Blah";
-    assert_equal None @@ Reader.run reader_option2 ~init:"Bleh";
+    assert_equal None @@ Reader.run reader_option2 ~init:"Bleh"
 end
 
 let suite =

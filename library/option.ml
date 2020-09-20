@@ -2,7 +2,7 @@ module MakeT (Wrapped : Monad.MONAD) = struct
   module WrappedInfix = Monad.MonadInfix (Wrapped)
   open WrappedInfix.Syntax
 
-  module OptionMonad : Monad.MONAD with type 'a t = 'a option Wrapped.t = struct
+  module OptionMonadPlus : Monad.MONAD_PLUS with type 'a t = 'a option Wrapped.t = struct
     type 'a t = 'a option Wrapped.t
 
     let pure v = Some v |> Wrapped.pure
@@ -20,21 +20,29 @@ module MakeT (Wrapped : Monad.MONAD) = struct
       match x with Some x' -> x' | _ -> Wrapped.pure None
 
     let bind m f = join (map f m)
+
+    let empty () = Wrapped.pure None
+
+    let choice xa ya =
+      let+ x = xa and+ y = ya in
+      match x with
+      | None -> y
+      | _ -> x
   end
 
-  include OptionMonad
+  include OptionMonadPlus
 
   let elevate v =
     let+ x = v in
     Some x
 
-  include Monad.MonadInfix (OptionMonad)
+  include Monad.MonadPlusInfix (OptionMonadPlus)
 
   let run m = m [@@inline]
 
   let create x = x [@@inline]
 
-  let none _ = Wrapped.pure None
+  let none = empty
 end
 
 module Make = MakeT (Identity)

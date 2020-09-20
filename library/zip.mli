@@ -1,4 +1,6 @@
-include Monad.APPLICATIVE with type 'a t = 'a list
+include Monad.ALTERNATIVE with type 'a t = 'a list
+
+val ( <|> ) : 'a t -> 'a t -> 'a t
 
 val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
 

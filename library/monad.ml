@@ -14,12 +14,26 @@ module type APPLICATIVE = sig
   val pure : 'a -> 'a t
 end
 
+module type ALTERNATIVE = sig
+  include APPLICATIVE
+
+  val empty : unit -> 'a t
+
+  val choice : 'a t -> 'a t -> 'a t
+end
+
 module type MONAD = sig
   include APPLICATIVE
 
   val bind : 'a t -> ('a -> 'b t) -> 'b t
 
   val join : 'a t t -> 'a t
+end
+
+module type MONAD_PLUS = sig
+  include ALTERNATIVE
+
+  include MONAD with type 'a t := 'a t
 end
 
 module FunctorInfix (F : FUNCTOR) = struct
@@ -34,7 +48,7 @@ module ApplicativeInfix (A : APPLICATIVE) = struct
   module InfixF = FunctorInfix (A)
   include InfixF
 
-  let ( <*> ) fa xa = A.apply fa xa [@@inline]
+  let ( <*> ) = A.apply
 
   module Syntax = struct
     include InfixF.Syntax
@@ -43,17 +57,31 @@ module ApplicativeInfix (A : APPLICATIVE) = struct
   end
 end
 
+module AlternativeInfix (A : ALTERNATIVE) = struct
+  module InfixA = ApplicativeInfix (A)
+  include InfixA
+
+  let ( <|> ) = A.choice
+end
+
 module MonadInfix (M : MONAD) = struct
   module InfixA = ApplicativeInfix (M)
   include InfixA
 
-  let ( >>= ) m f = M.bind m f [@@inline]
+  let ( >>= ) = M.bind
 
   module Syntax = struct
     include InfixA.Syntax
 
-    let ( let* ) m f = M.bind m f [@@inline]
+    let ( let* ) = M.bind
   end
+end
+
+module MonadPlusInfix (M : MONAD_PLUS) = struct
+  module InfixM = MonadInfix (M)
+  include InfixM
+
+  let ( <|> ) = M.choice
 end
 
 module type MAKE = sig
@@ -107,7 +135,7 @@ module ApplicativeFunctions (A : APPLICATIVE) = struct
   let sequence_array ms =
     let k m m' =
       let+ x = m and+ xs = m' in
-      Stdlib.Array.append [|x|] xs
+      Stdlib.Array.append [| x |] xs
     in
     Stdlib.Array.fold_right k ms (pure [||])
 

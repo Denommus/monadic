@@ -28,3 +28,21 @@ struct
   module Infix = Monad.ApplicativeInfix (ComposeApplicative)
   include Infix
 end
+
+module ComposeAlternative (A1 : Monad.ALTERNATIVE) (A2 : Monad.APPLICATIVE) = struct
+  module Applicative = ComposeApplicative (A1) (A2)
+
+  module ComposeAlternative = struct
+    include Applicative.ComposeApplicative
+
+    let empty = A1.empty
+
+    let choice = A1.choice
+  end
+
+  let elevate = Applicative.elevate
+
+  include ComposeAlternative
+  module Infix = Monad.AlternativeInfix (ComposeAlternative)
+  include Infix
+end

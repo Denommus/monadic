@@ -2,7 +2,8 @@ module MakeT (Wrapped : Monad.MONAD) = struct
   module WrappedInfix = Monad.MonadInfix (Wrapped)
   open WrappedInfix.Syntax
 
-  module ArrayMonad : Monad.MONAD with type 'a t = 'a array Wrapped.t = struct
+  module ArrayMonadPlus : Monad.MONAD_PLUS with type 'a t = 'a array Wrapped.t =
+  struct
     type 'a t = 'a array Wrapped.t
 
     let pure v = [| v |] |> Wrapped.pure
@@ -29,19 +30,24 @@ module MakeT (Wrapped : Monad.MONAD) = struct
       Stdlib.Array.to_list xs |> Stdlib.Array.concat
 
     let bind m f = join (map f m)
+
+    let choice xa ya =
+      let+ x = xa and+ y = ya in
+      Stdlib.Array.append x y
+
+    let empty () = Wrapped.pure [||]
   end
 
-  include ArrayMonad
-
-  let elevate v =
-    let+ x = v in
-    [| x |]
-
-  include Monad.MonadInfix (ArrayMonad)
+  include ArrayMonadPlus
+  include Monad.MonadPlusInfix (ArrayMonadPlus)
 
   let run m = m [@@inline]
 
   let create x = x [@@inline]
+
+  let elevate v =
+    let+ x = v in
+    [| x |]
 end
 
 module Make = MakeT (Identity)
