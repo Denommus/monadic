@@ -56,8 +56,8 @@ struct
     type 'a t = 'a ReaderMonad.t
 
     let append xa ya r =
-      let x = ReaderMonad.run xa ~init:r in
-      let y = ReaderMonad.run ya ~init:r in
+      let x = xa r in
+      let y = ya r in
       Wrapped.append x y
 
     let empty () _ = Wrapped.empty ()
