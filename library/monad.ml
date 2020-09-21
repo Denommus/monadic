@@ -1,4 +1,11 @@
 (* Common definitions for all monads *)
+module type MONOID = sig
+  type t
+
+  val empty : t
+
+  val append : t -> t -> t
+end
 
 module type FUNCTOR = sig
   type 'a t

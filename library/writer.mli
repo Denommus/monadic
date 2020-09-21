@@ -1,14 +1,6 @@
-module type MONOID = sig
-  type t
-
-  val empty : t
-
-  val append : t -> t -> t
-end
-
 module MakeT : functor
   (Wrapped : Monad.MONAD)
-  (W : MONOID)
+  (W : Monad.MONOID)
   -> sig
   type w
 
@@ -23,7 +15,7 @@ end
 with type w = W.t
 
 module Make : functor
-  (W : MONOID)
+  (W : Monad.MONOID)
   -> sig
   type w
 

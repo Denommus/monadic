@@ -44,6 +44,47 @@ struct
   let create x = x [@@inline]
 
   let error x = Error x |> Wrapped.pure
+
+  let ok x = Ok x |> Wrapped.pure
 end
 
 module Make = MakeT (Identity)
+
+module MakePlusT (Wrapped : Monad.MONAD) (E : Monad.MONOID) = struct
+  module ResultMonad = MakeT (Wrapped) (E)
+
+  type e = E.t
+
+  module AppendAndEmpty = struct
+    module WrappedInfix = Monad.MonadInfix (Wrapped)
+    open WrappedInfix.Syntax
+
+    type 'a t = 'a ResultMonad.t
+
+    let append : 'a t -> 'a t -> 'a t =
+     fun xa ya ->
+      let+ x = xa and+ y = ya in
+      match (x, y) with
+      | Error e1, Error e2 -> Error (E.append e1 e2)
+      | Ok a, _ -> Ok a
+      | _, b -> b
+
+    let empty () = Wrapped.pure @@ Error E.empty
+  end
+
+  module ResultMonadPlus = Monad.CreateMonadPlus (ResultMonad) (AppendAndEmpty)
+  include ResultMonadPlus
+  include Monad.MonadPlusInfix (ResultMonadPlus)
+
+  let run = ResultMonad.run
+
+  let create = ResultMonad.create
+
+  let elevate = ResultMonad.elevate
+
+  let error = ResultMonad.error
+
+  let ok = ResultMonad.ok
+end
+
+module MakePlus = MakePlusT (Identity)

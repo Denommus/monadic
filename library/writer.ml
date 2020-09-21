@@ -1,12 +1,4 @@
-module type MONOID = sig
-  type t
-
-  val empty : t
-
-  val append : t -> t -> t
-end
-
-module MakeT (Wrapped : Monad.MONAD) (W : MONOID) = struct
+module MakeT (Wrapped : Monad.MONAD) (W : Monad.MONOID) = struct
   type w = W.t
 
   module WrappedInfix = Monad.MonadInfix (Wrapped)
