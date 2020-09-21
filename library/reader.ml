@@ -65,7 +65,6 @@ struct
 
   module ReaderMonadPlus = Monad.CreateMonadPlus (ReaderMonad) (AppendAndEmpty)
   include ReaderMonadPlus
-  include Monad.MonadPlusInfix (ReaderMonadPlus)
 
   let peek = ReaderMonad.peek
 

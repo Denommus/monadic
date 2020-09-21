@@ -57,7 +57,6 @@ module MakePlusT (Wrapped : Monad.MONAD_PLUS) (W : Monad.MONOID) = struct
 
   module WriterMonadPlus = Monad.CreateMonadPlus (WriterMonad) (AppendAndEmpty)
   include WriterMonadPlus
-  include Monad.MonadPlusInfix (WriterMonadPlus)
 
   let create = WriterMonad.create
 

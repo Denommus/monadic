@@ -76,7 +76,6 @@ struct
 
   module StateMonadPlus = Monad.CreateMonadPlus (StateMonad) (AppendAndEmpty)
   include StateMonadPlus
-  include Monad.MonadPlusInfix (StateMonadPlus)
 
   let create = StateMonad.create
 

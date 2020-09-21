@@ -65,7 +65,6 @@ struct
   module RefStateMonadPlus =
     Monad.CreateMonadPlus (RefStateMonad) (AppendAndEmpty)
   include RefStateMonadPlus
-  include Monad.MonadPlusInfix (RefStateMonadPlus)
 
   let create = RefStateMonad.create
 

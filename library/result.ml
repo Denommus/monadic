@@ -74,7 +74,6 @@ module MakePlusT (Wrapped : Monad.MONAD) (E : Monad.MONOID) = struct
 
   module ResultMonadPlus = Monad.CreateMonadPlus (ResultMonad) (AppendAndEmpty)
   include ResultMonadPlus
-  include Monad.MonadPlusInfix (ResultMonadPlus)
 
   let run = ResultMonad.run
 
