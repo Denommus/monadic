@@ -13,4 +13,3 @@ module Syntax : sig
 
   val ( let* ) : 'a t -> ('a -> 'b t) -> 'b t
 end
-

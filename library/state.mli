@@ -36,3 +36,23 @@ module Make : functor
   val create : (s -> 'a * s) -> 'a t
 end
 with type s = S.t
+
+module MakePlusT : functor
+  (Wrapped : Monad.MONAD_PLUS)
+  (S : sig
+     type t
+   end)
+  -> sig
+  type s
+
+  include Monad.MAKE_PLUS_T with type 'a wrapped := 'a Wrapped.t
+
+  val get : s t
+
+  val put : s -> unit t
+
+  val run : 'a t -> init:s -> ('a * s) Wrapped.t
+
+  val create : (s -> ('a * s) Wrapped.t) -> 'a t
+end
+with type s = S.t

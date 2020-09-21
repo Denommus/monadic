@@ -55,9 +55,9 @@ struct
     let append xa ya =
       let open RefStateMonad in
       create @@ fun r ->
-      let x, r' = run xa ~init:r in
-      let y, r'' = run ya ~init:r' in
-      Wrapped.map (fun a -> (a, r'')) @@ Wrapped.append x y
+      let x, _ = run xa ~init:r in
+      let y, _ = run ya ~init:r in
+      Wrapped.map (fun a -> (a, r)) @@ Wrapped.append x y
 
     let empty () = RefStateMonad.create (fun _ -> Wrapped.empty ())
   end

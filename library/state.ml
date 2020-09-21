@@ -53,3 +53,38 @@ struct
 end
 
 module Make = MakeT (Identity)
+
+module MakePlusT
+    (Wrapped : Monad.MONAD_PLUS) (S : sig
+      type t
+    end) =
+struct
+  module StateMonad = MakeT (Wrapped) (S)
+
+  type s = S.t
+
+  module AppendAndEmpty = struct
+    type 'a t = 'a StateMonad.t
+
+    let append xa ya s =
+      let x = xa s in
+      let y = ya s in
+      Wrapped.append x y
+
+    let empty () = StateMonad.create (fun _ -> Wrapped.empty ())
+  end
+
+  module StateMonadPlus = Monad.CreateMonadPlus (StateMonad) (AppendAndEmpty)
+  include StateMonadPlus
+  include Monad.MonadPlusInfix (StateMonadPlus)
+
+  let create = StateMonad.create
+
+  let run = StateMonad.run
+
+  let get = StateMonad.get
+
+  let put = StateMonad.put
+
+  let elevate = StateMonad.elevate
+end
