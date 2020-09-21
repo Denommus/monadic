@@ -23,7 +23,7 @@ module Make : functor
   -> sig
   type r
 
-  include Monad.MAKE
+  include Monad.MAKE_T with type 'a wrapped := 'a
 
   val peek : r t
 

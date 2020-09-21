@@ -16,7 +16,7 @@ end
 with type 'a t = 'a option Wrapped.t
 
 module Make : sig
-  include Monad.MAKE
+  include Monad.MAKE_T with type 'a wrapped := 'a
 
   val run : 'a t -> 'a option
 

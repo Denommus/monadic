@@ -25,7 +25,7 @@ module Make : functor
   -> sig
   type s
 
-  include Monad.MAKE
+  include Monad.MAKE_T with type 'a wrapped := 'a
 
   val get : s t
 

@@ -91,8 +91,12 @@ module MonadPlusInfix (M : MONAD_PLUS) = struct
   let ( <|> ) = M.append
 end
 
-module type MAKE = sig
+module type MAKE_T = sig
+  type 'a wrapped
+
   include MONAD
+
+  val elevate : 'a wrapped -> 'a t
 
   val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
 
@@ -107,14 +111,6 @@ module type MAKE = sig
 
     val ( let* ) : 'a t -> ('a -> 'b t) -> 'b t
   end
-end
-
-module type MAKE_T = sig
-  type 'a wrapped
-
-  include MAKE
-
-  val elevate : 'a wrapped -> 'a t
 end
 
 module type MAKE_PLUS_T = sig

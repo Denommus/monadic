@@ -19,7 +19,7 @@ module Make : functor
   -> sig
   type w
 
-  include Monad.MAKE
+  include Monad.MAKE_T with type 'a wrapped := 'a
 
   val tell : w -> unit t
 
