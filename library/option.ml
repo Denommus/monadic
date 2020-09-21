@@ -2,7 +2,8 @@ module MakeT (Wrapped : Monad.MONAD) = struct
   module WrappedInfix = Monad.MonadInfix (Wrapped)
   open WrappedInfix.Syntax
 
-  module OptionMonadPlus : Monad.MONAD_PLUS with type 'a t = 'a option Wrapped.t = struct
+  module OptionMonadPlus :
+    Monad.MONAD_PLUS with type 'a t = 'a option Wrapped.t = struct
     type 'a t = 'a option Wrapped.t
 
     let pure v = Some v |> Wrapped.pure
@@ -25,9 +26,7 @@ module MakeT (Wrapped : Monad.MONAD) = struct
 
     let append xa ya =
       let+ x = xa and+ y = ya in
-      match x with
-      | None -> y
-      | _ -> x
+      match x with None -> y | _ -> x
   end
 
   include OptionMonadPlus

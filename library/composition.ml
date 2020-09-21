@@ -29,7 +29,8 @@ struct
   include Infix
 end
 
-module ComposeAlternative (A1 : Monad.ALTERNATIVE) (A2 : Monad.APPLICATIVE) = struct
+module ComposeAlternative (A1 : Monad.ALTERNATIVE) (A2 : Monad.APPLICATIVE) =
+struct
   module Applicative = ComposeApplicative (A1) (A2)
 
   module ComposeAlternative = struct

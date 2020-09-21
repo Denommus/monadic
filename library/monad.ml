@@ -110,6 +110,52 @@ module type MAKE_T = sig
   val elevate : 'a wrapped -> 'a t
 end
 
+module type MAKE_PLUS_T = sig
+  include MAKE_T
+
+  val ( <|> ) : 'a t -> 'a t -> 'a t
+
+  val append : 'a t -> 'a t -> 'a t
+
+  val empty : unit -> 'a t
+end
+
+module CreateMonadPlus
+    (M : MONAD) (C : sig
+      type 'a t = 'a M.t
+
+      val append : 'a t -> 'a t -> 'a t
+
+      val empty : unit -> 'a t
+    end) : sig
+  include MONAD_PLUS with type 'a t = 'a M.t
+
+  val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
+
+  val ( <*> ) : ('a -> 'b) t -> 'a t -> 'b t
+
+  val ( >>= ) : 'a t -> ('a -> 'b t) -> 'b t
+
+  val ( <|> ) : 'a t -> 'a t -> 'a t
+
+  module Syntax : sig
+    val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
+
+    val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
+
+    val ( let* ) : 'a t -> ('a -> 'b t) -> 'b t
+  end
+end = struct
+  module MonadPlus = struct
+    include M
+    include C
+  end
+
+  module Infix = MonadPlusInfix (MonadPlus)
+  include MonadPlus
+  include Infix
+end
+
 module ApplicativeFunctions (A : APPLICATIVE) = struct
   open A
   module Infix = ApplicativeInfix (A)

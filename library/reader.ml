@@ -42,3 +42,36 @@ struct
 end
 
 module Make = MakeT (Identity)
+
+module MakePlusT
+    (Wrapped : Monad.MONAD_PLUS) (R : sig
+      type t
+    end) =
+struct
+  module ReaderMonad = MakeT (Wrapped) (R)
+
+  type r = ReaderMonad.r
+
+  module AppendAndEmpty = struct
+    type 'a t = 'a ReaderMonad.t
+
+    let append xa ya r =
+      let x = ReaderMonad.run xa ~init:r in
+      let y = ReaderMonad.run ya ~init:r in
+      Wrapped.append x y
+
+    let empty () _ = Wrapped.empty ()
+  end
+
+  module ReaderMonadPlus = Monad.CreateMonadPlus (ReaderMonad) (AppendAndEmpty)
+  include ReaderMonadPlus
+  include Monad.MonadPlusInfix (ReaderMonadPlus)
+
+  let peek = ReaderMonad.peek
+
+  let run = ReaderMonad.run
+
+  let create = ReaderMonad.create
+
+  let elevate = ReaderMonad.elevate
+end
