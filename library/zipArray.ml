@@ -19,7 +19,7 @@ module ZipArrayAlternative = struct
     let c (x, y) = x y in
     zip f x |> Stdlib.Array.map c
 
-  let choice x y = Stdlib.Array.append x @@ drop (Stdlib.Array.length x) y
+  let append x y = Stdlib.Array.append x @@ drop (Stdlib.Array.length x) y
 
   let empty () = [||]
 end

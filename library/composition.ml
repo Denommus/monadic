@@ -37,7 +37,7 @@ module ComposeAlternative (A1 : Monad.ALTERNATIVE) (A2 : Monad.APPLICATIVE) = st
 
     let empty = A1.empty
 
-    let choice = A1.choice
+    let append = A1.append
   end
 
   let elevate = Applicative.elevate

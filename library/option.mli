@@ -7,7 +7,7 @@ module MakeT : functor
 
   val create : 'a option Wrapped.t -> 'a t
 
-  val choice : 'a t -> 'a t -> 'a t
+  val append : 'a t -> 'a t -> 'a t
 
   val empty : unit -> 'a t
 
@@ -24,7 +24,7 @@ module Make : sig
 
   val none : unit -> 'a t
 
-  val choice : 'a t -> 'a t -> 'a t
+  val append : 'a t -> 'a t -> 'a t
 
   val empty : unit -> 'a t
 

@@ -19,7 +19,7 @@ module type ALTERNATIVE = sig
 
   val empty : unit -> 'a t
 
-  val choice : 'a t -> 'a t -> 'a t
+  val append : 'a t -> 'a t -> 'a t
 end
 
 module type MONAD = sig
@@ -61,7 +61,7 @@ module AlternativeInfix (A : ALTERNATIVE) = struct
   module InfixA = ApplicativeInfix (A)
   include InfixA
 
-  let ( <|> ) = A.choice
+  let ( <|> ) = A.append
 end
 
 module MonadInfix (M : MONAD) = struct
@@ -81,7 +81,7 @@ module MonadPlusInfix (M : MONAD_PLUS) = struct
   module InfixM = MonadInfix (M)
   include InfixM
 
-  let ( <|> ) = M.choice
+  let ( <|> ) = M.append
 end
 
 module type MAKE = sig

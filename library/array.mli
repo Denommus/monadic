@@ -7,7 +7,7 @@ module MakeT : functor
 
   val create : 'a array Wrapped.t -> 'a t
 
-  val choice : 'a t -> 'a t -> 'a t
+  val append : 'a t -> 'a t -> 'a t
 
   val empty : unit -> 'a t
 
@@ -22,7 +22,7 @@ module Make : sig
 
   val create : 'a array -> 'a t
 
-  val choice : 'a t -> 'a t -> 'a t
+  val append : 'a t -> 'a t -> 'a t
 
   val empty : unit -> 'a t
 

@@ -31,7 +31,7 @@ module MakeT (Wrapped : Monad.MONAD) = struct
 
     let bind m f = join (map f m)
 
-    let choice xa ya =
+    let append xa ya =
       let+ x = xa and+ y = ya in
       Stdlib.Array.append x y
 

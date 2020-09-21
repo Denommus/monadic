@@ -23,7 +23,7 @@ module MakeT (Wrapped : Monad.MONAD) = struct
 
     let empty () = Wrapped.pure None
 
-    let choice xa ya =
+    let append xa ya =
       let+ x = xa and+ y = ya in
       match x with
       | None -> y

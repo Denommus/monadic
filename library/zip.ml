@@ -18,7 +18,7 @@ module ZipAlternative = struct
     let c (x, y) = x y in
     zip f x |> Stdlib.List.map c
 
-  let choice x y = x @ drop (Stdlib.List.length x) y
+  let append x y = x @ drop (Stdlib.List.length x) y
 
   let empty () = []
 end
