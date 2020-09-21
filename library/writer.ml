@@ -41,3 +41,29 @@ module MakeT (Wrapped : Monad.MONAD) (W : Monad.MONOID) = struct
 end
 
 module Make = MakeT (Identity)
+
+module MakePlusT (Wrapped : Monad.MONAD_PLUS) (W : Monad.MONOID) = struct
+  module WriterMonad = MakeT (Wrapped) (W)
+
+  type w = W.t
+
+  module AppendAndEmpty = struct
+    type 'a t = 'a WriterMonad.t
+
+    let append xa ya = Wrapped.append xa ya
+
+    let empty () = Wrapped.empty ()
+  end
+
+  module WriterMonadPlus = Monad.CreateMonadPlus (WriterMonad) (AppendAndEmpty)
+  include WriterMonadPlus
+  include Monad.MonadPlusInfix (WriterMonadPlus)
+
+  let create = WriterMonad.create
+
+  let run = WriterMonad.run
+
+  let tell = WriterMonad.tell
+
+  let elevate = WriterMonad.elevate
+end
