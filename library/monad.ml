@@ -219,9 +219,14 @@ module ApplicativeFunctions (A : APPLICATIVE) = struct
     let+ f = fa and+ a = aa and+ b = ba and+ c = ca and+ d = da in
     f a b c d
 
-  let m_if condition action = if condition then action else pure ()
+  let m_when condition action = if condition then action else pure ()
 
-  let m_unless condition = m_if (not condition)
+  let m_unless condition = m_when (not condition)
+
+  let m_replicate i m = Stdlib.List.init i (fun _ -> m)
+                        |> sequence
+
+  let m_replicate_ i m = m_replicate i m *> pure ()
 end
 
 module MonadFunctions (M : MONAD) = struct
@@ -244,4 +249,29 @@ module MonadFunctions (M : MONAD) = struct
     let* s' = f1 s in
     let+ s'' = f2 s' in
     s''
+end
+
+module AlternativeFunctions (A: ALTERNATIVE) = struct
+  let guard c = if c then A.pure () else A.empty ()
+
+  module Infix = AlternativeInfix (A)
+
+  (* some and many are still untested, they are completely based on the Haskell definitions *)
+  let some v =
+    let open Infix in
+    let open Infix.Syntax in
+    let rec some_v () = let+ v_ = v and+ many_v_ = many_v () in v_ :: many_v_
+    and many_v () = some_v () <|> A.pure [] in
+    some_v ()
+
+  let many v =
+    let open Infix in
+    let open Infix.Syntax in
+    let rec some_v () = let+ v_ = v and+ many_v_ = many_v () in v_ :: many_v_
+    and many_v () = some_v () <|> A.pure [] in
+    many_v ()
+
+  let optional v =
+    let open Infix in
+    Stdlib.Option.some <$> v <|> A.pure None
 end
