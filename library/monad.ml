@@ -223,8 +223,7 @@ module ApplicativeFunctions (A : APPLICATIVE) = struct
 
   let m_unless condition = m_when (not condition)
 
-  let m_replicate i m = Stdlib.List.init i (fun _ -> m)
-                        |> sequence
+  let m_replicate i m = Stdlib.List.init i (fun _ -> m) |> sequence
 
   let m_replicate_ i m = m_replicate i m *> pure ()
 end
@@ -251,7 +250,7 @@ module MonadFunctions (M : MONAD) = struct
     s''
 end
 
-module AlternativeFunctions (A: ALTERNATIVE) = struct
+module AlternativeFunctions (A : ALTERNATIVE) = struct
   let guard c = if c then A.pure () else A.empty ()
 
   module Infix = AlternativeInfix (A)
@@ -260,14 +259,18 @@ module AlternativeFunctions (A: ALTERNATIVE) = struct
   let some v =
     let open Infix in
     let open Infix.Syntax in
-    let rec some_v () = let+ v_ = v and+ many_v_ = many_v () in v_ :: many_v_
+    let rec some_v () =
+      let+ v_ = v and+ many_v_ = many_v () in
+      v_ :: many_v_
     and many_v () = some_v () <|> A.pure [] in
     some_v ()
 
   let many v =
     let open Infix in
     let open Infix.Syntax in
-    let rec some_v () = let+ v_ = v and+ many_v_ = many_v () in v_ :: many_v_
+    let rec some_v () =
+      let+ v_ = v and+ many_v_ = many_v () in
+      v_ :: many_v_
     and many_v () = some_v () <|> A.pure [] in
     many_v ()
 
