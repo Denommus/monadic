@@ -226,6 +226,10 @@ module ApplicativeFunctions (A : APPLICATIVE) = struct
   let m_replicate i m = Stdlib.List.init i (fun _ -> m) |> sequence
 
   let m_replicate_ i m = m_replicate i m *> pure ()
+
+  let m_replicate_array i m = Stdlib.Array.init i (fun _ -> m) |> sequence_array
+
+  let m_replicate_array_ i m = m_replicate_array i m *> pure ()
 end
 
 module MonadFunctions (M : MONAD) = struct
