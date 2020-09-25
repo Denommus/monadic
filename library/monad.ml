@@ -276,7 +276,7 @@ module MonadFunctionsGeneric (C : COLLECTION) (M : MONAD) = struct
   module Infix = MonadInfix (M)
   open Infix.Syntax
 
-  open ApplicativeFunctions (M)
+  open ApplicativeFunctionsGeneric (C) (M)
 
   let m_fold f initial ms =
     let c x k z =
