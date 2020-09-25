@@ -68,6 +68,8 @@
     | Zip                          | [X]     | [ ] |
     | Array                        | [X]     | [ ] |
     | ZipArray                     | [X]     | [ ] |
+    | Seq                          | [X]     | [ ] |
+    | ZipSeq                       | [X]     | [ ] |
     | Continuation                 | [ ]     | [X] |
     | Ref                          | [ ]     | [X] |
     | Tree                         | [ ]     | [X] |
