@@ -1,4 +1,4 @@
-module ZipAlternative = struct
+module ZipListAlternative = struct
   type 'a t = 'a list
 
   let rec zip xs ys =
@@ -23,5 +23,5 @@ module ZipAlternative = struct
   let empty () = []
 end
 
-include ZipAlternative
-include Monad.AlternativeInfix (ZipAlternative)
+include ZipListAlternative
+include Monad.AlternativeInfix (ZipListAlternative)

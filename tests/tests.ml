@@ -56,8 +56,8 @@ module ListTest = struct
     assert_equal [ 6; 3; 30; 8; 4; 40; 10; 5; 50 ] list
 end
 
-module ZipTest = struct
-  open Monadic.Zip.Syntax
+module ZipListTest = struct
+  open Monadic.ZipList.Syntax
 
   let test _ =
     let list =
@@ -94,7 +94,7 @@ let suite =
          "test_transform" >:: ReaderWriterTest.test;
          "test_ref_state" >:: RefStateTest.test;
          "test_list" >:: ListTest.test;
-         "test_zip" >:: ZipTest.test;
+         "test_zip" >:: ZipListTest.test;
          "test_composing" >:: ComposingTest.test;
        ]
 
