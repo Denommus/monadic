@@ -82,9 +82,10 @@
      but you should validate it yourself before deciding for one or
      the other.
 
-     Zip is an applicative transformer, and doesn't have a monadic
-     interface. It's similar to List, but it acts on zips of the two
-     lists, instead of expanding like lists do.
+     Zip is an applicative, and doesn't have a monadic interface. It's
+     similar to List, but it acts on zips of the two lists, instead of
+     expanding like lists do. Same for ZipArray and ZipSeq, which are
+     similar to Zip, but act on Arrays and Seqs, of course.
 
      Continuation will probably never be implemented in Monadic, given
      it introduces a lot of complexity on the implementation side of
