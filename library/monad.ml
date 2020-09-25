@@ -159,6 +159,14 @@ end = struct
   include Infix
 end
 
+let rec seq_fold_right f seq init = match seq () with
+  | Stdlib.Seq.Nil -> init
+  | Stdlib.Seq.Cons (y, ys) -> f y (seq_fold_right f ys init)
+
+let seq_init i0 f =
+  let rec k i = if i <= 0 then Stdlib.Seq.empty else fun () -> Stdlib.Seq.Cons (f (i0 - i), k (i - 1)) in
+  k i0
+
 module ApplicativeFunctions (A : APPLICATIVE) = struct
   open A
   module Infix = ApplicativeInfix (A)
@@ -175,11 +183,20 @@ module ApplicativeFunctions (A : APPLICATIVE) = struct
   let sequence ms =
     let k m m' =
       let+ x = m and+ xs = m' in
+      fun () -> Stdlib.Seq.Cons (x, xs)
+    in
+    seq_fold_right k ms (pure Stdlib.Seq.empty)
+
+  let sequence_ ms = seq_fold_right ( *> ) ms (pure Stdlib.Seq.empty)
+
+  let sequence_list ms =
+    let k m m' =
+      let+ x = m and+ xs = m' in
       x :: xs
     in
     Stdlib.List.fold_right k ms (pure [])
 
-  let sequence_ ms = Stdlib.List.fold_right ( *> ) ms (pure ())
+  let sequence_list_ ms = Stdlib.List.fold_right ( *> ) ms (pure ())
 
   let sequence_array ms =
     let k m m' =
@@ -190,18 +207,18 @@ module ApplicativeFunctions (A : APPLICATIVE) = struct
 
   let sequence_array_ ms = Stdlib.Array.fold_right ( *> ) ms (pure ())
 
-  let a_map f ms = sequence (Stdlib.List.map f ms) [@@inline]
+  let a_map f ms = sequence (Stdlib.Seq.map f ms) [@@inline]
 
-  let a_map_ f ms = sequence_ (Stdlib.List.map f ms) [@@inline]
+  let a_map_ f ms = sequence_ (Stdlib.Seq.map f ms) [@@inline]
 
   let a_filter f xs =
     let k curr acc =
       let+ flg = f curr and+ ys = acc in
-      if flg then curr :: xs else ys
+      if flg then fun () -> Stdlib.Seq.Cons (curr, xs) else ys
     in
-    Stdlib.List.fold_right k xs (pure [])
+    seq_fold_right k xs (pure Stdlib.Seq.empty)
 
-  let traverse f xs = Stdlib.List.map f xs |> sequence [@@inline]
+  let traverse f xs = Stdlib.Seq.map f xs |> sequence [@@inline]
 
   let a_for xs f = traverse f xs [@@inline]
 
@@ -223,9 +240,13 @@ module ApplicativeFunctions (A : APPLICATIVE) = struct
 
   let m_unless condition = m_when (not condition)
 
-  let m_replicate i m = Stdlib.List.init i (fun _ -> m) |> sequence
+  let m_replicate i m = seq_init i (fun _ -> m) |> sequence
 
   let m_replicate_ i m = m_replicate i m *> pure ()
+
+  let m_replicate_list i m = Stdlib.List.init i (fun _ -> m) |> sequence_list
+
+  let m_replicate_list_ i m = m_replicate_list i m *> pure ()
 
   let m_replicate_array i m = Stdlib.Array.init i (fun _ -> m) |> sequence_array
 
@@ -244,7 +265,7 @@ module MonadFunctions (M : MONAD) = struct
       let* m' = f z x in
       k m'
     in
-    Stdlib.List.fold_right c ms pure initial
+    seq_fold_right c ms pure initial
 
   let m_fold_ f initial ms = m_fold f initial ms *> pure () [@@inline]
 
@@ -265,8 +286,8 @@ module AlternativeFunctions (A : ALTERNATIVE) = struct
     let open Infix.Syntax in
     let rec some_v () =
       let+ v_ = v and+ many_v_ = many_v () in
-      v_ :: many_v_
-    and many_v () = some_v () <|> A.pure [] in
+      fun () -> Stdlib.Seq.Cons (v_, many_v_)
+    and many_v () = some_v ()  <|> A.pure Stdlib.Seq.empty in
     some_v ()
 
   let many v =
@@ -274,8 +295,8 @@ module AlternativeFunctions (A : ALTERNATIVE) = struct
     let open Infix.Syntax in
     let rec some_v () =
       let+ v_ = v and+ many_v_ = many_v () in
-      v_ :: many_v_
-    and many_v () = some_v () <|> A.pure [] in
+      fun () -> Stdlib.Seq.Cons (v_, many_v_)
+    and many_v () = some_v ()  <|> A.pure Stdlib.Seq.empty in
     many_v ()
 
   let optional v =

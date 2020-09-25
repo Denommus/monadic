@@ -22,7 +22,7 @@ module MakeT (Wrapped : Monad.MONAD) = struct
 
     let sequence ms =
       let open Monad.ApplicativeFunctions (Wrapped) in
-      sequence ms
+      sequence_list ms
 
     let join v =
       let* (x : 'a t list) = v in
