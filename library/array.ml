@@ -21,8 +21,8 @@ module MakeT (Wrapped : Monad.MONAD) = struct
       Stdlib.Array.fold_right accum fs [||]
 
     let sequence ms =
-      let open Monad.ApplicativeFunctions (Wrapped) in
-      sequence_array ms
+      let open Monad.ApplicativeFunctionsArray (Wrapped) in
+      sequence ms
 
     let join v =
       let* (x : 'a t array) = v in

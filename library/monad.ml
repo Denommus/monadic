@@ -159,15 +159,55 @@ end = struct
   include Infix
 end
 
-let rec seq_fold_right f seq init = match seq () with
-  | Stdlib.Seq.Nil -> init
-  | Stdlib.Seq.Cons (y, ys) -> f y (seq_fold_right f ys init)
+module type COLLECTION = sig
+  type 'a t
 
-let seq_init i0 f =
-  let rec k i = if i <= 0 then Stdlib.Seq.empty else fun () -> Stdlib.Seq.Cons (f (i0 - i), k (i - 1)) in
-  k i0
+  include FUNCTOR with type 'a t := 'a t
 
-module ApplicativeFunctions (A : APPLICATIVE) = struct
+  val fold_right : ('a -> 'b -> 'b) -> 'a t -> 'b -> 'b
+
+  val init : int -> (int -> 'a) -> 'a t
+
+  val cons : 'a -> 'a t -> 'a t
+
+  val empty : 'a t
+end
+
+module SeqCollection = struct
+  include Stdlib.Seq
+
+  let rec fold_right f seq init =
+    match seq () with
+    | Stdlib.Seq.Nil -> init
+    | Stdlib.Seq.Cons (y, ys) -> f y (fold_right f ys init)
+
+  let init i0 f =
+    let rec k i =
+      if i <= 0 then Stdlib.Seq.empty
+      else fun () -> Stdlib.Seq.Cons (f (i0 - i), k (i - 1))
+    in
+    k i0
+
+  let cons x xs () = Stdlib.Seq.Cons (x, xs)
+
+  let empty = Stdlib.Seq.empty
+end
+
+module ListCollection = struct
+  include Stdlib.List
+
+  let empty = []
+end
+
+module ArrayCollection = struct
+  include Stdlib.Array
+
+  let empty = [||]
+
+  let cons x xs = Stdlib.Array.append [| x |] xs
+end
+
+module ApplicativeFunctionsGeneric (C : COLLECTION) (A : APPLICATIVE) = struct
   open A
   module Infix = ApplicativeInfix (A)
   open Infix.Syntax
@@ -183,42 +223,24 @@ module ApplicativeFunctions (A : APPLICATIVE) = struct
   let sequence ms =
     let k m m' =
       let+ x = m and+ xs = m' in
-      fun () -> Stdlib.Seq.Cons (x, xs)
+      C.cons x xs
     in
-    seq_fold_right k ms (pure Stdlib.Seq.empty)
+    C.fold_right k ms (pure C.empty)
 
-  let sequence_ ms = seq_fold_right ( *> ) ms (pure Stdlib.Seq.empty)
+  let sequence_ ms = C.fold_right ( *> ) ms (pure C.empty)
 
-  let sequence_list ms =
-    let k m m' =
-      let+ x = m and+ xs = m' in
-      x :: xs
-    in
-    Stdlib.List.fold_right k ms (pure [])
+  let a_map f ms = sequence (C.map f ms) [@@inline]
 
-  let sequence_list_ ms = Stdlib.List.fold_right ( *> ) ms (pure ())
-
-  let sequence_array ms =
-    let k m m' =
-      let+ x = m and+ xs = m' in
-      Stdlib.Array.append [| x |] xs
-    in
-    Stdlib.Array.fold_right k ms (pure [||])
-
-  let sequence_array_ ms = Stdlib.Array.fold_right ( *> ) ms (pure ())
-
-  let a_map f ms = sequence (Stdlib.Seq.map f ms) [@@inline]
-
-  let a_map_ f ms = sequence_ (Stdlib.Seq.map f ms) [@@inline]
+  let a_map_ f ms = sequence_ (C.map f ms) [@@inline]
 
   let a_filter f xs =
     let k curr acc =
       let+ flg = f curr and+ ys = acc in
-      if flg then fun () -> Stdlib.Seq.Cons (curr, xs) else ys
+      if flg then C.cons curr xs else ys
     in
-    seq_fold_right k xs (pure Stdlib.Seq.empty)
+    C.fold_right k xs (pure C.empty)
 
-  let traverse f xs = Stdlib.Seq.map f xs |> sequence [@@inline]
+  let traverse f xs = C.map f xs |> sequence [@@inline]
 
   let a_for xs f = traverse f xs [@@inline]
 
@@ -240,20 +262,16 @@ module ApplicativeFunctions (A : APPLICATIVE) = struct
 
   let m_unless condition = m_when (not condition)
 
-  let m_replicate i m = seq_init i (fun _ -> m) |> sequence
+  let m_replicate i m = C.init i (fun _ -> m) |> sequence
 
   let m_replicate_ i m = m_replicate i m *> pure ()
-
-  let m_replicate_list i m = Stdlib.List.init i (fun _ -> m) |> sequence_list
-
-  let m_replicate_list_ i m = m_replicate_list i m *> pure ()
-
-  let m_replicate_array i m = Stdlib.Array.init i (fun _ -> m) |> sequence_array
-
-  let m_replicate_array_ i m = m_replicate_array i m *> pure ()
 end
 
-module MonadFunctions (M : MONAD) = struct
+module ApplicativeFunctions = ApplicativeFunctionsGeneric (SeqCollection)
+module ApplicativeFunctionsList = ApplicativeFunctionsGeneric (ListCollection)
+module ApplicativeFunctionsArray = ApplicativeFunctionsGeneric (ArrayCollection)
+
+module MonadFunctionsGeneric (C : COLLECTION) (M : MONAD) = struct
   open M
   module Infix = MonadInfix (M)
   open Infix.Syntax
@@ -265,7 +283,7 @@ module MonadFunctions (M : MONAD) = struct
       let* m' = f z x in
       k m'
     in
-    seq_fold_right c ms pure initial
+    C.fold_right c ms pure initial
 
   let m_fold_ f initial ms = m_fold f initial ms *> pure () [@@inline]
 
@@ -274,6 +292,10 @@ module MonadFunctions (M : MONAD) = struct
     let+ s'' = f2 s' in
     s''
 end
+
+module MonadFunctions = MonadFunctionsGeneric (SeqCollection)
+module MonadFunctionsList = MonadFunctionsGeneric (ListCollection)
+module MonadFunctionsArray = MonadFunctionsGeneric (ArrayCollection)
 
 module AlternativeFunctions (A : ALTERNATIVE) = struct
   let guard c = if c then A.pure () else A.empty ()
@@ -287,7 +309,7 @@ module AlternativeFunctions (A : ALTERNATIVE) = struct
     let rec some_v () =
       let+ v_ = v and+ many_v_ = many_v () in
       fun () -> Stdlib.Seq.Cons (v_, many_v_)
-    and many_v () = some_v ()  <|> A.pure Stdlib.Seq.empty in
+    and many_v () = some_v () <|> A.pure Stdlib.Seq.empty in
     some_v ()
 
   let many v =
@@ -296,7 +318,7 @@ module AlternativeFunctions (A : ALTERNATIVE) = struct
     let rec some_v () =
       let+ v_ = v and+ many_v_ = many_v () in
       fun () -> Stdlib.Seq.Cons (v_, many_v_)
-    and many_v () = some_v ()  <|> A.pure Stdlib.Seq.empty in
+    and many_v () = some_v () <|> A.pure Stdlib.Seq.empty in
     many_v ()
 
   let optional v =
