@@ -258,13 +258,13 @@ module ApplicativeFunctionsGeneric (C : COLLECTION) (A : APPLICATIVE) = struct
     let+ f = fa and+ a = aa and+ b = ba and+ c = ca and+ d = da in
     f a b c d
 
-  let m_when condition action = if condition then action else pure ()
+  let a_when condition action = if condition then action else pure ()
 
-  let m_unless condition = m_when (not condition)
+  let a_unless condition = a_when (not condition)
 
-  let m_replicate i m = C.init i (fun _ -> m) |> sequence
+  let a_replicate i m = C.init i (fun _ -> m) |> sequence
 
-  let m_replicate_ i m = m_replicate i m *> pure ()
+  let a_replicate_ i m = a_replicate i m *> pure ()
 end
 
 module ApplicativeFunctions = ApplicativeFunctionsGeneric (SeqCollection)

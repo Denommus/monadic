@@ -305,13 +305,13 @@ module ApplicativeFunctionsGeneric : functor
     'd A.t ->
     'e A.t
 
-  val m_when : bool -> unit A.t -> unit A.t
+  val a_when : bool -> unit A.t -> unit A.t
 
-  val m_unless : bool -> unit A.t -> unit A.t
+  val a_unless : bool -> unit A.t -> unit A.t
 
-  val m_replicate : int -> 'a A.t -> 'a C.t A.t
+  val a_replicate : int -> 'a A.t -> 'a C.t A.t
 
-  val m_replicate_ : int -> 'a A.t -> unit A.t
+  val a_replicate_ : int -> 'a A.t -> unit A.t
 end
 
 module ApplicativeFunctions : functor (A : APPLICATIVE) -> sig
@@ -348,13 +348,13 @@ module ApplicativeFunctions : functor (A : APPLICATIVE) -> sig
     'd A.t ->
     'e A.t
 
-  val m_when : bool -> unit A.t -> unit A.t
+  val a_when : bool -> unit A.t -> unit A.t
 
-  val m_unless : bool -> unit A.t -> unit A.t
+  val a_unless : bool -> unit A.t -> unit A.t
 
-  val m_replicate : int -> 'a A.t -> 'a SeqCollection.t A.t
+  val a_replicate : int -> 'a A.t -> 'a SeqCollection.t A.t
 
-  val m_replicate_ : int -> 'a A.t -> unit A.t
+  val a_replicate_ : int -> 'a A.t -> unit A.t
 end
 
 module ApplicativeFunctionsList : functor (A : APPLICATIVE) -> sig
@@ -392,13 +392,13 @@ module ApplicativeFunctionsList : functor (A : APPLICATIVE) -> sig
     'd A.t ->
     'e A.t
 
-  val m_when : bool -> unit A.t -> unit A.t
+  val a_when : bool -> unit A.t -> unit A.t
 
-  val m_unless : bool -> unit A.t -> unit A.t
+  val a_unless : bool -> unit A.t -> unit A.t
 
-  val m_replicate : int -> 'a A.t -> 'a ListCollection.t A.t
+  val a_replicate : int -> 'a A.t -> 'a ListCollection.t A.t
 
-  val m_replicate_ : int -> 'a A.t -> unit A.t
+  val a_replicate_ : int -> 'a A.t -> unit A.t
 end
 
 module ApplicativeFunctionsArray : functor (A : APPLICATIVE) -> sig
@@ -437,13 +437,13 @@ module ApplicativeFunctionsArray : functor (A : APPLICATIVE) -> sig
     'd A.t ->
     'e A.t
 
-  val m_when : bool -> unit A.t -> unit A.t
+  val a_when : bool -> unit A.t -> unit A.t
 
-  val m_unless : bool -> unit A.t -> unit A.t
+  val a_unless : bool -> unit A.t -> unit A.t
 
-  val m_replicate : int -> 'a A.t -> 'a ArrayCollection.t A.t
+  val a_replicate : int -> 'a A.t -> 'a ArrayCollection.t A.t
 
-  val m_replicate_ : int -> 'a A.t -> unit A.t
+  val a_replicate_ : int -> 'a A.t -> unit A.t
 end
 
 module MonadFunctionsGeneric : functor (C : COLLECTION) (M : MONAD) -> sig
