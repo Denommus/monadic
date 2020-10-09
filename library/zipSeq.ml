@@ -10,11 +10,9 @@ module ZipSeqAlternative = struct
   let rec drop i xs =
     let open Stdlib.Seq in
     if i <= 0 then xs
-    else match xs () with
-         | Nil -> empty
-         | Cons (_, ls) -> drop (i - 1) ls
+    else match xs () with Nil -> empty | Cons (_, ls) -> drop (i - 1) ls
 
-  let length seq = Stdlib.Seq.fold_left (fun i _ -> i+1) 0 seq
+  let length seq = Stdlib.Seq.fold_left (fun i _ -> i + 1) 0 seq
 
   let pure = Seq.Make.pure
 

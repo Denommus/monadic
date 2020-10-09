@@ -1,18 +1,14 @@
-let rec append xs ys () = match xs () with
+let rec append xs ys () =
+  match xs () with
   | Stdlib.Seq.Nil -> ys ()
   | Stdlib.Seq.Cons (x, xs) -> Stdlib.Seq.Cons (x, append xs ys)
 
 let concat s =
   let open Stdlib.Seq in
-  let rec aux current rest () = match current () with
-    | Cons(e, s) ->
-      Cons(e, aux s rest)
-    | Nil ->
-      match rest () with
-      | Cons(e, s) ->
-        aux e s ()
-      | Nil ->
-        Nil
+  let rec aux current rest () =
+    match current () with
+    | Cons (e, s) -> Cons (e, aux s rest)
+    | Nil -> ( match rest () with Cons (e, s) -> aux e s () | Nil -> Nil )
   in
   aux Stdlib.Seq.empty s
 
@@ -20,8 +16,8 @@ module MakeT (Wrapped : Monad.MONAD) = struct
   module WrappedInfix = Monad.MonadInfix (Wrapped)
   open WrappedInfix.Syntax
 
-  module SeqMonadPlus : Monad.MONAD_PLUS with type 'a t = 'a Stdlib.Seq.t Wrapped.t =
-  struct
+  module SeqMonadPlus :
+    Monad.MONAD_PLUS with type 'a t = 'a Stdlib.Seq.t Wrapped.t = struct
     type 'a t = 'a Stdlib.Seq.t Wrapped.t
 
     let pure v = Stdlib.Seq.return v |> Wrapped.pure
