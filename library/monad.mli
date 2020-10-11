@@ -319,22 +319,21 @@ module ApplicativeFunctions : functor (A : APPLICATIVE) -> sig
 
   val ( <* ) : 'a A.t -> 'b A.t -> 'a A.t
 
-  val sequence : 'a A.t SeqCollection.t -> 'a SeqCollection.t A.t
+  val sequence : 'a A.t Stdlib.Seq.t -> 'a Stdlib.Seq.t A.t
 
-  val sequence_ : 'a A.t SeqCollection.t -> 'b SeqCollection.t A.t
+  val sequence_ : 'a A.t Stdlib.Seq.t -> 'b Stdlib.Seq.t A.t
 
-  val a_map : ('a -> 'b A.t) -> 'a SeqCollection.t -> 'b SeqCollection.t A.t
+  val a_map : ('a -> 'b A.t) -> 'a Stdlib.Seq.t -> 'b Stdlib.Seq.t A.t
 
-  val a_map_ : ('a -> 'b A.t) -> 'a SeqCollection.t -> 'c SeqCollection.t A.t
+  val a_map_ : ('a -> 'b A.t) -> 'a Stdlib.Seq.t -> 'c Stdlib.Seq.t A.t
 
-  val a_filter :
-    ('a -> bool A.t) -> 'a SeqCollection.t -> 'a SeqCollection.t A.t
+  val a_filter : ('a -> bool A.t) -> 'a Stdlib.Seq.t -> 'a Stdlib.Seq.t A.t
 
-  val traverse : ('a -> 'b A.t) -> 'a SeqCollection.t -> 'b SeqCollection.t A.t
+  val traverse : ('a -> 'b A.t) -> 'a Stdlib.Seq.t -> 'b Stdlib.Seq.t A.t
 
-  val a_for : 'a SeqCollection.t -> ('a -> 'b A.t) -> 'b SeqCollection.t A.t
+  val a_for : 'a Stdlib.Seq.t -> ('a -> 'b A.t) -> 'b Stdlib.Seq.t A.t
 
-  val a_for_ : 'a SeqCollection.t -> ('a -> 'b A.t) -> unit A.t
+  val a_for_ : 'a Stdlib.Seq.t -> ('a -> 'b A.t) -> unit A.t
 
   val lift2 : ('a -> 'b -> 'c) A.t -> 'a A.t -> 'b A.t -> 'c A.t
 
@@ -352,7 +351,7 @@ module ApplicativeFunctions : functor (A : APPLICATIVE) -> sig
 
   val a_unless : bool -> unit A.t -> unit A.t
 
-  val a_replicate : int -> 'a A.t -> 'a SeqCollection.t A.t
+  val a_replicate : int -> 'a A.t -> 'a Stdlib.Seq.t A.t
 
   val a_replicate_ : int -> 'a A.t -> unit A.t
 end
@@ -362,23 +361,21 @@ module ApplicativeFunctionsList : functor (A : APPLICATIVE) -> sig
 
   val ( <* ) : 'a A.t -> 'b A.t -> 'a A.t
 
-  val sequence : 'a A.t ListCollection.t -> 'a ListCollection.t A.t
+  val sequence : 'a A.t Stdlib.List.t -> 'a Stdlib.List.t A.t
 
-  val sequence_ : 'a A.t ListCollection.t -> 'b ListCollection.t A.t
+  val sequence_ : 'a A.t Stdlib.List.t -> 'b Stdlib.List.t A.t
 
-  val a_map : ('a -> 'b A.t) -> 'a ListCollection.t -> 'b ListCollection.t A.t
+  val a_map : ('a -> 'b A.t) -> 'a Stdlib.List.t -> 'b Stdlib.List.t A.t
 
-  val a_map_ : ('a -> 'b A.t) -> 'a ListCollection.t -> 'c ListCollection.t A.t
+  val a_map_ : ('a -> 'b A.t) -> 'a Stdlib.List.t -> 'c Stdlib.List.t A.t
 
-  val a_filter :
-    ('a -> bool A.t) -> 'a ListCollection.t -> 'a ListCollection.t A.t
+  val a_filter : ('a -> bool A.t) -> 'a Stdlib.List.t -> 'a Stdlib.List.t A.t
 
-  val traverse :
-    ('a -> 'b A.t) -> 'a ListCollection.t -> 'b ListCollection.t A.t
+  val traverse : ('a -> 'b A.t) -> 'a Stdlib.List.t -> 'b Stdlib.List.t A.t
 
-  val a_for : 'a ListCollection.t -> ('a -> 'b A.t) -> 'b ListCollection.t A.t
+  val a_for : 'a Stdlib.List.t -> ('a -> 'b A.t) -> 'b Stdlib.List.t A.t
 
-  val a_for_ : 'a ListCollection.t -> ('a -> 'b A.t) -> unit A.t
+  val a_for_ : 'a Stdlib.List.t -> ('a -> 'b A.t) -> unit A.t
 
   val lift2 : ('a -> 'b -> 'c) A.t -> 'a A.t -> 'b A.t -> 'c A.t
 
@@ -396,7 +393,7 @@ module ApplicativeFunctionsList : functor (A : APPLICATIVE) -> sig
 
   val a_unless : bool -> unit A.t -> unit A.t
 
-  val a_replicate : int -> 'a A.t -> 'a ListCollection.t A.t
+  val a_replicate : int -> 'a A.t -> 'a Stdlib.List.t A.t
 
   val a_replicate_ : int -> 'a A.t -> unit A.t
 end
@@ -406,24 +403,21 @@ module ApplicativeFunctionsArray : functor (A : APPLICATIVE) -> sig
 
   val ( <* ) : 'a A.t -> 'b A.t -> 'a A.t
 
-  val sequence : 'a A.t ArrayCollection.t -> 'a ArrayCollection.t A.t
+  val sequence : 'a A.t Stdlib.Array.t -> 'a Stdlib.Array.t A.t
 
-  val sequence_ : 'a A.t ArrayCollection.t -> 'b ArrayCollection.t A.t
+  val sequence_ : 'a A.t Stdlib.Array.t -> 'b Stdlib.Array.t A.t
 
-  val a_map : ('a -> 'b A.t) -> 'a ArrayCollection.t -> 'b ArrayCollection.t A.t
+  val a_map : ('a -> 'b A.t) -> 'a Stdlib.Array.t -> 'b Stdlib.Array.t A.t
 
-  val a_map_ :
-    ('a -> 'b A.t) -> 'a ArrayCollection.t -> 'c ArrayCollection.t A.t
+  val a_map_ : ('a -> 'b A.t) -> 'a Stdlib.Array.t -> 'c Stdlib.Array.t A.t
 
-  val a_filter :
-    ('a -> bool A.t) -> 'a ArrayCollection.t -> 'a ArrayCollection.t A.t
+  val a_filter : ('a -> bool A.t) -> 'a Stdlib.Array.t -> 'a Stdlib.Array.t A.t
 
-  val traverse :
-    ('a -> 'b A.t) -> 'a ArrayCollection.t -> 'b ArrayCollection.t A.t
+  val traverse : ('a -> 'b A.t) -> 'a Stdlib.Array.t -> 'b Stdlib.Array.t A.t
 
-  val a_for : 'a ArrayCollection.t -> ('a -> 'b A.t) -> 'b ArrayCollection.t A.t
+  val a_for : 'a Stdlib.Array.t -> ('a -> 'b A.t) -> 'b Stdlib.Array.t A.t
 
-  val a_for_ : 'a ArrayCollection.t -> ('a -> 'b A.t) -> unit A.t
+  val a_for_ : 'a Stdlib.Array.t -> ('a -> 'b A.t) -> unit A.t
 
   val lift2 : ('a -> 'b -> 'c) A.t -> 'a A.t -> 'b A.t -> 'c A.t
 
@@ -441,7 +435,7 @@ module ApplicativeFunctionsArray : functor (A : APPLICATIVE) -> sig
 
   val a_unless : bool -> unit A.t -> unit A.t
 
-  val a_replicate : int -> 'a A.t -> 'a ArrayCollection.t A.t
+  val a_replicate : int -> 'a A.t -> 'a Stdlib.Array.t A.t
 
   val a_replicate_ : int -> 'a A.t -> unit A.t
 end
@@ -455,25 +449,25 @@ module MonadFunctionsGeneric : functor (C : COLLECTION) (M : MONAD) -> sig
 end
 
 module MonadFunctions : functor (M : MONAD) -> sig
-  val m_fold : ('a -> 'b -> 'a M.t) -> 'a -> 'b SeqCollection.t -> 'a M.t
+  val m_fold : ('a -> 'b -> 'a M.t) -> 'a -> 'b Stdlib.Seq.t -> 'a M.t
 
-  val m_fold_ : ('a -> 'b -> 'a M.t) -> 'a -> 'b SeqCollection.t -> unit M.t
+  val m_fold_ : ('a -> 'b -> 'a M.t) -> 'a -> 'b Stdlib.Seq.t -> unit M.t
 
   val ( >=> ) : ('a -> 'b M.t) -> ('b -> 'c M.t) -> 'a -> 'c M.t
 end
 
 module MonadFunctionsList : functor (M : MONAD) -> sig
-  val m_fold : ('a -> 'b -> 'a M.t) -> 'a -> 'b ListCollection.t -> 'a M.t
+  val m_fold : ('a -> 'b -> 'a M.t) -> 'a -> 'b Stdlib.List.t -> 'a M.t
 
-  val m_fold_ : ('a -> 'b -> 'a M.t) -> 'a -> 'b ListCollection.t -> unit M.t
+  val m_fold_ : ('a -> 'b -> 'a M.t) -> 'a -> 'b Stdlib.List.t -> unit M.t
 
   val ( >=> ) : ('a -> 'b M.t) -> ('b -> 'c M.t) -> 'a -> 'c M.t
 end
 
 module MonadFunctionsArray : functor (M : MONAD) -> sig
-  val m_fold : ('a -> 'b -> 'a M.t) -> 'a -> 'b ArrayCollection.t -> 'a M.t
+  val m_fold : ('a -> 'b -> 'a M.t) -> 'a -> 'b Stdlib.Array.t -> 'a M.t
 
-  val m_fold_ : ('a -> 'b -> 'a M.t) -> 'a -> 'b ArrayCollection.t -> unit M.t
+  val m_fold_ : ('a -> 'b -> 'a M.t) -> 'a -> 'b Stdlib.Array.t -> unit M.t
 
   val ( >=> ) : ('a -> 'b M.t) -> ('b -> 'c M.t) -> 'a -> 'c M.t
 end
