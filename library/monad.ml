@@ -188,7 +188,7 @@ module SeqCollection = struct
     in
     k i0
 
-  let cons x xs () = Stdlib.Seq.Cons (x, xs)
+  let cons x xs () = Stdlib.Seq.Cons (x, xs) [@@inline]
 
   let empty = Stdlib.Seq.empty
 end
@@ -204,7 +204,79 @@ module ArrayCollection = struct
 
   let empty = [||]
 
-  let cons x xs = Stdlib.Array.append [| x |] xs
+  let cons x xs = Stdlib.Array.append [| x |] xs [@@inline]
+end
+
+module type APPLICATIVE_FUNCTIONS = sig
+  type 'a applicative
+
+  type 'a collection
+
+  val ( *> ) : 'a applicative -> 'b applicative -> 'b applicative
+
+  val ( <* ) : 'a applicative -> 'b applicative -> 'a applicative
+
+  val sequence : 'a applicative collection -> 'a collection applicative
+
+  val sequence_ : 'a applicative collection -> 'b collection applicative
+
+  val a_map :
+    ('a -> 'b applicative) -> 'a collection -> 'b collection applicative
+
+  val a_map_ :
+    ('a -> 'b applicative) -> 'a collection -> 'c collection applicative
+
+  val a_filter :
+    ('a -> bool applicative) -> 'a collection -> 'a collection applicative
+
+  val traverse :
+    ('a -> 'b applicative) -> 'a collection -> 'b collection applicative
+
+  val a_for :
+    'a collection -> ('a -> 'b applicative) -> 'b collection applicative
+
+  val a_for_ : 'a collection -> ('a -> 'b applicative) -> unit applicative
+
+  val lift2 :
+    ('a -> 'b -> 'c) applicative ->
+    'a applicative ->
+    'b applicative ->
+    'c applicative
+
+  val lift3 :
+    ('a -> 'b -> 'c -> 'd) applicative ->
+    'a applicative ->
+    'b applicative ->
+    'c applicative ->
+    'd applicative
+
+  val lift4 :
+    ('a -> 'b -> 'c -> 'd -> 'e) applicative ->
+    'a applicative ->
+    'b applicative ->
+    'c applicative ->
+    'd applicative ->
+    'e applicative
+
+  val a_when : bool -> unit applicative -> unit applicative
+
+  val a_unless : bool -> unit applicative -> unit applicative
+
+  val a_replicate : int -> 'a applicative -> 'a collection applicative
+
+  val a_replicate_ : int -> 'a applicative -> unit applicative
+end
+
+module type MONAD_FUNCTIONS = sig
+  type 'a monad
+
+  type 'a collection
+
+  val m_fold : ('a -> 'b -> 'a monad) -> 'a -> 'b collection -> 'a monad
+
+  val m_fold_ : ('a -> 'b -> 'a monad) -> 'a -> 'b collection -> unit monad
+
+  val ( >=> ) : ('a -> 'b monad) -> ('b -> 'c monad) -> 'a -> 'c monad
 end
 
 module ApplicativeFunctionsGeneric (C : COLLECTION) (A : APPLICATIVE) = struct
