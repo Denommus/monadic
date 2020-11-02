@@ -23,17 +23,16 @@ struct
     let+ x = peek in
     !x
 
-  let run m ~init =
+  let run m init =
     let r = ref init in
-    let result = run m ~init:r in
+    let result = run m r in
     (result, !r)
 
   module WrappedInfix = Monad.MonadInfix (Wrapped)
 
   let create f =
     create @@ fun r ->
-    let open WrappedInfix.Syntax in
-    let+ result, new_state = f !r in
+    let result, new_state = f !r in
     r := new_state;
     result
 end
@@ -55,11 +54,11 @@ struct
     let append xa ya =
       let open RefStateMonad in
       create @@ fun r ->
-      let x, _ = run xa ~init:r in
-      let y, _ = run ya ~init:r in
-      Wrapped.map (fun a -> (a, r)) @@ Wrapped.append x y
+      let x, _ = run xa r in
+      let y, _ = run ya r in
+      (Wrapped.append x y, r)
 
-    let empty () = RefStateMonad.create (fun _ -> Wrapped.empty ())
+    let empty () = RefStateMonad.create (fun r -> (Wrapped.empty (), r))
   end
 
   module RefStateMonadPlus =

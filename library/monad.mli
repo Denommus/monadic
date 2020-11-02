@@ -141,6 +141,8 @@ module type MAKE_T = sig
 
   type 'a t
 
+  type 'a actual_t
+
   val map : ('a -> 'b) -> 'a t -> 'b t
 
   val apply : ('a -> 'b) t -> 'a t -> 'b t
@@ -152,6 +154,10 @@ module type MAKE_T = sig
   val join : 'a t t -> 'a t
 
   val elevate : 'a wrapped -> 'a t
+
+  val run : 'a t -> 'a actual_t
+
+  val create : 'a actual_t -> 'a t
 
   val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
 
@@ -169,35 +175,7 @@ module type MAKE_T = sig
 end
 
 module type MAKE_PLUS_T = sig
-  type 'a wrapped
-
-  type 'a t
-
-  val map : ('a -> 'b) -> 'a t -> 'b t
-
-  val apply : ('a -> 'b) t -> 'a t -> 'b t
-
-  val pure : 'a -> 'a t
-
-  val bind : 'a t -> ('a -> 'b t) -> 'b t
-
-  val join : 'a t t -> 'a t
-
-  val elevate : 'a wrapped -> 'a t
-
-  val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
-
-  val ( <*> ) : ('a -> 'b) t -> 'a t -> 'b t
-
-  val ( >>= ) : 'a t -> ('a -> 'b t) -> 'b t
-
-  module Syntax : sig
-    val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
-
-    val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
-
-    val ( let* ) : 'a t -> ('a -> 'b t) -> 'b t
-  end
+  include MAKE_T
 
   val ( <|> ) : 'a t -> 'a t -> 'a t
 

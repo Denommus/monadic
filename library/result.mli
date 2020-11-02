@@ -4,19 +4,17 @@ module MakeT : functor
      type t
    end)
   -> sig
-  type e
+  type e = E.t
 
-  include Monad.MAKE_T with type 'a wrapped := 'a Wrapped.t
-
-  val run : 'a t -> ('a, e) result Wrapped.t
-
-  val create : ('a, e) result Wrapped.t -> 'a t
+  include
+    Monad.MAKE_T
+      with type 'a wrapped := 'a Wrapped.t
+      with type 'a actual_t := ('a, e) result Wrapped.t
 
   val error : e -> 'a t
 
   val ok : 'a -> 'a t
 end
-with type e = E.t
 with type 'a t = ('a, E.t) result Wrapped.t
 
 module Make : functor
@@ -24,29 +22,26 @@ module Make : functor
      type t
    end)
   -> sig
-  type e
+  type e = E.t
 
-  include Monad.MAKE_T with type 'a wrapped := 'a
-
-  val run : 'a t -> ('a, e) result
-
-  val create : ('a, e) result -> 'a t
+  include
+    Monad.MAKE_T
+      with type 'a wrapped := 'a
+      with type 'a actual_t := ('a, e) result
 
   val error : e -> 'a t
 
   val ok : 'a -> 'a t
 end
-with type e = E.t
 with type 'a t = ('a, E.t) result
 
 module MakePlusT : functor (Wrapped : Monad.MONAD) (E : Monad.MONOID) -> sig
-  type e
+  type e = E.t
 
-  include Monad.MAKE_PLUS_T with type 'a wrapped := 'a Wrapped.t
-
-  val run : 'a t -> ('a, e) result Wrapped.t
-
-  val create : ('a, e) result Wrapped.t -> 'a t
+  include
+    Monad.MAKE_PLUS_T
+      with type 'a wrapped := 'a Wrapped.t
+      with type 'a actual_t := ('a, e) result Wrapped.t
 
   val error : e -> 'a t
 
@@ -54,9 +49,12 @@ module MakePlusT : functor (Wrapped : Monad.MONAD) (E : Monad.MONOID) -> sig
 end
 
 module MakePlus : functor (E : Monad.MONOID) -> sig
-  type e
+  type e = E.t
 
-  include Monad.MAKE_PLUS_T with type 'a wrapped := 'a
+  include
+    Monad.MAKE_PLUS_T
+      with type 'a wrapped := 'a
+      with type 'a actual_t := ('a, e) result
 
   val run : 'a t -> ('a, e) result
 

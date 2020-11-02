@@ -36,7 +36,7 @@ struct
 
   let peek r = Wrapped.pure r
 
-  let run m ~init = m init
+  let run m init = m init
 
   let create x = x [@@inline]
 end

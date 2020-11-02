@@ -6,15 +6,14 @@ module MakeT : functor
   -> sig
   type s
 
-  include Monad.MAKE_T with type 'a wrapped := 'a Wrapped.t
+  include
+    Monad.MAKE_T
+      with type 'a wrapped := 'a Wrapped.t
+      with type 'a actual_t := s -> 'a Wrapped.t * s
 
   val get : s t
 
   val put : s -> unit t
-
-  val run : 'a t -> init:s -> 'a Wrapped.t * s
-
-  val create : (s -> ('a * s) Wrapped.t) -> 'a t
 end
 with type s = S.t
 
@@ -25,15 +24,12 @@ module Make : functor
   -> sig
   type s
 
-  include Monad.MAKE_T with type 'a wrapped := 'a
+  include
+    Monad.MAKE_T with type 'a wrapped := 'a with type 'a actual_t := s -> 'a * s
 
   val get : s t
 
   val put : s -> unit t
-
-  val run : 'a t -> init:s -> 'a * s
-
-  val create : (s -> 'a * s) -> 'a t
 end
 with type s = S.t
 
@@ -45,14 +41,13 @@ module MakePlusT : functor
   -> sig
   type s
 
-  include Monad.MAKE_PLUS_T with type 'a wrapped := 'a Wrapped.t
+  include
+    Monad.MAKE_PLUS_T
+      with type 'a wrapped := 'a Wrapped.t
+      with type 'a actual_t := s -> 'a Wrapped.t * s
 
   val get : s t
 
   val put : s -> unit t
-
-  val run : 'a t -> init:s -> 'a Wrapped.t * s
-
-  val create : (s -> ('a * s) Wrapped.t) -> 'a t
 end
 with type s = S.t

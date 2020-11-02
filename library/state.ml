@@ -47,7 +47,7 @@ struct
 
   let put s _ = Wrapped.pure ((), s)
 
-  let run m ~init = m init
+  let run m init = m init
 
   let create x = x [@@inline]
 end

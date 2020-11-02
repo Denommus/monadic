@@ -94,9 +94,15 @@ end
 module type MAKE_T = sig
   type 'a wrapped
 
+  type 'a actual_t
+
   include MONAD
 
   val elevate : 'a wrapped -> 'a t
+
+  val run : 'a t -> 'a actual_t
+
+  val create : 'a actual_t -> 'a t
 
   val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
 

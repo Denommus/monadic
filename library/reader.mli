@@ -6,13 +6,12 @@ module MakeT : functor
   -> sig
   type r
 
-  include Monad.MAKE_T with type 'a wrapped := 'a Wrapped.t
+  include
+    Monad.MAKE_T
+      with type 'a wrapped := 'a Wrapped.t
+      with type 'a actual_t := r -> 'a Wrapped.t
 
   val peek : r t
-
-  val run : 'a t -> init:r -> 'a Wrapped.t
-
-  val create : (r -> 'a Wrapped.t) -> 'a t
 end
 with type r = R.t
 
@@ -23,13 +22,10 @@ module Make : functor
   -> sig
   type r
 
-  include Monad.MAKE_T with type 'a wrapped := 'a
+  include
+    Monad.MAKE_T with type 'a wrapped := 'a with type 'a actual_t := r -> 'a
 
   val peek : r t
-
-  val run : 'a t -> init:r -> 'a
-
-  val create : (r -> 'a) -> 'a t
 end
 with type r = R.t
 
@@ -41,11 +37,14 @@ module MakePlusT : functor
   -> sig
   type r
 
-  include Monad.MAKE_PLUS_T with type 'a wrapped := 'a Wrapped.t
+  include
+    Monad.MAKE_PLUS_T
+      with type 'a wrapped := 'a Wrapped.t
+      with type 'a actual_t := r -> 'a Wrapped.t
 
   val peek : r t
 
-  val run : 'a t -> init:r -> 'a Wrapped.t
+  val run : 'a t -> r -> 'a Wrapped.t
 
   val create : (r -> 'a Wrapped.t) -> 'a t
 end
