@@ -13,9 +13,7 @@ module type FUNCTOR = sig
 end
 
 module type APPLICATIVE = sig
-  type 'a t
-
-  val map : ('a -> 'b) -> 'a t -> 'b t
+  include FUNCTOR
 
   val apply : ('a -> 'b) t -> 'a t -> 'b t
 
@@ -23,13 +21,7 @@ module type APPLICATIVE = sig
 end
 
 module type ALTERNATIVE = sig
-  type 'a t
-
-  val map : ('a -> 'b) -> 'a t -> 'b t
-
-  val apply : ('a -> 'b) t -> 'a t -> 'b t
-
-  val pure : 'a -> 'a t
+  include APPLICATIVE
 
   val empty : unit -> 'a t
 
@@ -37,13 +29,7 @@ module type ALTERNATIVE = sig
 end
 
 module type MONAD = sig
-  type 'a t
-
-  val map : ('a -> 'b) -> 'a t -> 'b t
-
-  val apply : ('a -> 'b) t -> 'a t -> 'b t
-
-  val pure : 'a -> 'a t
+  include APPLICATIVE
 
   val bind : 'a t -> ('a -> 'b t) -> 'b t
 
@@ -51,21 +37,9 @@ module type MONAD = sig
 end
 
 module type MONAD_PLUS = sig
-  type 'a t
+  include MONAD
 
-  val empty : unit -> 'a t
-
-  val append : 'a t -> 'a t -> 'a t
-
-  val map : ('a -> 'b) -> 'a t -> 'b t
-
-  val apply : ('a -> 'b) t -> 'a t -> 'b t
-
-  val pure : 'a -> 'a t
-
-  val bind : 'a t -> ('a -> 'b t) -> 'b t
-
-  val join : 'a t t -> 'a t
+  include ALTERNATIVE with type 'a t := 'a t
 end
 
 module FunctorInfix : functor (F : FUNCTOR) -> sig
@@ -143,15 +117,7 @@ module type MAKE_T = sig
 
   type 'a actual_t
 
-  val map : ('a -> 'b) -> 'a t -> 'b t
-
-  val apply : ('a -> 'b) t -> 'a t -> 'b t
-
-  val pure : 'a -> 'a t
-
-  val bind : 'a t -> ('a -> 'b t) -> 'b t
-
-  val join : 'a t t -> 'a t
+  include MONAD with type 'a t := 'a t
 
   val elevate : 'a wrapped -> 'a t
 
@@ -194,21 +160,7 @@ module CreateMonadPlus : functor
      val empty : unit -> 'a t
    end)
   -> sig
-  type 'a t = 'a M.t
-
-  val empty : unit -> 'a t
-
-  val append : 'a t -> 'a t -> 'a t
-
-  val map : ('a -> 'b) -> 'a t -> 'b t
-
-  val apply : ('a -> 'b) t -> 'a t -> 'b t
-
-  val pure : 'a -> 'a t
-
-  val bind : 'a t -> ('a -> 'b t) -> 'b t
-
-  val join : 'a t t -> 'a t
+  include MONAD_PLUS with type 'a t = 'a M.t
 
   val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
 

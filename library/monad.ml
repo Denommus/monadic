@@ -38,9 +38,9 @@ module type MONAD = sig
 end
 
 module type MONAD_PLUS = sig
-  include ALTERNATIVE
+  include MONAD
 
-  include MONAD with type 'a t := 'a t
+  include ALTERNATIVE with type 'a t := 'a t
 end
 
 module FunctorInfix (F : FUNCTOR) = struct
