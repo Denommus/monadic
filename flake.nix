@@ -15,6 +15,12 @@
           overlays = [
             (final: prev: {
               "${pname}" = final.callPackage ./. { inherit pname; };
+              ocamlPackages = prev.ocamlPackages.overrideScope' (new: old: {
+                merlin = old.merlin.overrideAttrs (n: o: {
+                  # Check is broken on Darwin
+                  doCheck = final.stdenv.isLinux;
+                });
+              });
             })
           ];
         };
@@ -30,6 +36,11 @@
               pkgs."${pname}"
             ];
             buildInputs = with pkgs; [
+              rnix-lsp
+              ocamlPackages.ocaml-lsp
+              ocamlPackages.merlin
+              ocamlPackages.utop
+              ocamlformat
             ];
           };
         });

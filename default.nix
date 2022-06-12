@@ -11,10 +11,7 @@ ocamlPackages.buildDunePackage {
   minimumOCamlVersion = "4.08";
   buildInputs = with ocamlPackages; [
     utop
-    nodePackages.ocaml-language-server
-    merlin
     ounit2
-    ocamlformat
   ];
 
   buildPhase = "dune build -p ${pname}";
