@@ -20,16 +20,16 @@ module MakeT (Wrapped : Monad.MONAD) = struct
       in
       Stdlib.Array.fold_right accum fs [||]
 
-    let sequence ms =
-      let open Monad.ApplicativeFunctionsArray (Wrapped) in
-      sequence ms
+    let bind m f =
+      let* unwrapped = m in
+      Wrapped.pure [||]
+      |> Stdlib.Array.fold_right
+           (fun curr prev ->
+             let+ c = f curr and+ p = prev in
+             Stdlib.Array.append c p)
+           unwrapped
 
-    let join v =
-      let* (x : 'a t array) = v in
-      let+ xs = sequence x in
-      Stdlib.Array.to_list xs |> Stdlib.Array.concat
-
-    let bind m f = join (map f m)
+    let join v = bind v (fun x -> x)
 
     let append xa ya =
       let+ x = xa and+ y = ya in
@@ -42,7 +42,6 @@ module MakeT (Wrapped : Monad.MONAD) = struct
   include Monad.MonadPlusInfix (ArrayMonadPlus)
 
   let run m = m [@@inline]
-
   let create x = x [@@inline]
 
   let elevate v =

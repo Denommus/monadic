@@ -45,6 +45,19 @@ end
  *     assert_equal state "BarBlah"
  * end *)
 
+module ArrayTest = struct
+  module Arr = Monadic.Array.Make
+  open Arr.Syntax
+
+  let test _ =
+    let array =
+      let* x = [| 3; 4; 5 |] in
+      let* y = [| 6; 7; 8 |] in
+      x + y |> Arr.pure
+    in
+    assert_equal [| 9; 10; 11; 10; 11; 12; 11; 12; 13 |] array
+end
+
 module ListTest = struct
   open Monadic.List.Make.Syntax
 
@@ -92,7 +105,7 @@ let suite =
   "Example"
   >::: [
          "test_transform" >:: ReaderWriterTest.test;
-         (* "test_ref_state" >:: RefStateTest.test; *)
+         "test_array" >:: ArrayTest.test;
          "test_list" >:: ListTest.test;
          "test_zip" >:: ZipListTest.test;
          "test_composing" >:: ComposingTest.test;
