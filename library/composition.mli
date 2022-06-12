@@ -19,14 +19,11 @@ module ComposeApplicative : functor
   include Monad.APPLICATIVE
 
   val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
-
   val ( <*> ) : ('a -> 'b) t -> 'a t -> 'b t
-
   val elevate : 'a A1.t -> 'a t
 
   module Syntax : sig
     val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
-
     val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
   end
 end
@@ -36,16 +33,12 @@ module ComposeAlternative (A1 : Monad.ALTERNATIVE) (A2 : Monad.APPLICATIVE) : si
   include Monad.ALTERNATIVE
 
   val ( <|> ) : 'a t -> 'a t -> 'a t
-
   val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
-
   val ( <*> ) : ('a -> 'b) t -> 'a t -> 'b t
-
   val elevate : 'a A1.t -> 'a t
 
   module Syntax : sig
     val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
-
     val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
   end
 end

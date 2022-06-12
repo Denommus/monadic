@@ -11,7 +11,6 @@ module ZipListAlternative = struct
     else match xs with [] -> [] | _ -> drop (i - 1) @@ Stdlib.List.tl xs
 
   let pure = List.Make.pure
-
   let map = List.Make.map
 
   let apply f x =
@@ -19,7 +18,6 @@ module ZipListAlternative = struct
     zip f x |> Stdlib.List.map c
 
   let append x y = x @ drop (Stdlib.List.length x) y
-
   let empty () = []
 end
 

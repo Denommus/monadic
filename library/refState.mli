@@ -12,7 +12,6 @@ module MakeT : functor
       with type 'a actual_t := s -> 'a Wrapped.t * s
 
   val get : s t
-
   val put : s -> unit t
 end
 with type s = S.t
@@ -28,7 +27,6 @@ module Make : functor
     Monad.MAKE_T with type 'a wrapped := 'a with type 'a actual_t := s -> 'a * s
 
   val get : s t
-
   val put : s -> unit t
 end
 with type s = S.t
@@ -47,7 +45,6 @@ module MakePlusT : functor
       with type 'a actual_t := s -> 'a Wrapped.t * s
 
   val get : s t
-
   val put : s -> unit t
 end
 with type s = S.t

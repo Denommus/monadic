@@ -43,9 +43,7 @@ module MakePlusT : functor
       with type 'a actual_t := r -> 'a Wrapped.t
 
   val peek : r t
-
   val run : 'a t -> r -> 'a Wrapped.t
-
   val create : (r -> 'a Wrapped.t) -> 'a t
 end
 with type r = R.t

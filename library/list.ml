@@ -42,7 +42,6 @@ module MakeT (Wrapped : Monad.MONAD) = struct
   include Monad.MonadPlusInfix (ListMonadPlus)
 
   let run m = m [@@inline]
-
   let create x = x [@@inline]
 
   let elevate v =

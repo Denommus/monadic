@@ -35,9 +35,7 @@ struct
   include Monad.MonadInfix (ReaderMonad)
 
   let peek r = Wrapped.pure r
-
   let run m init = m init
-
   let create x = x [@@inline]
 end
 
@@ -67,10 +65,7 @@ struct
   include ReaderMonadPlus
 
   let peek = ReaderMonad.peek
-
   let run = ReaderMonad.run
-
   let create = ReaderMonad.create
-
   let elevate = ReaderMonad.elevate
 end

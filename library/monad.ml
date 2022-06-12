@@ -3,7 +3,6 @@ module type MONOID = sig
   type t
 
   val empty : t
-
   val append : t -> t -> t
 end
 
@@ -17,7 +16,6 @@ module type APPLICATIVE = sig
   include FUNCTOR
 
   val apply : ('a -> 'b) t -> 'a t -> 'b t
-
   val pure : 'a -> 'a t
 end
 
@@ -25,7 +23,6 @@ module type ALTERNATIVE = sig
   include APPLICATIVE
 
   val empty : unit -> 'a t
-
   val append : 'a t -> 'a t -> 'a t
 end
 
@@ -33,13 +30,11 @@ module type MONAD = sig
   include APPLICATIVE
 
   val bind : 'a t -> ('a -> 'b t) -> 'b t
-
   val join : 'a t t -> 'a t
 end
 
 module type MONAD_PLUS = sig
   include MONAD
-
   include ALTERNATIVE with type 'a t := 'a t
 end
 
@@ -93,28 +88,20 @@ end
 
 module type MAKE_T = sig
   type 'a wrapped
-
   type 'a actual_t
 
   include MONAD
 
   val elevate : 'a wrapped -> 'a t
-
   val run : 'a t -> 'a actual_t
-
   val create : 'a actual_t -> 'a t
-
   val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
-
   val ( <*> ) : ('a -> 'b) t -> 'a t -> 'b t
-
   val ( >>= ) : 'a t -> ('a -> 'b t) -> 'b t
 
   module Syntax : sig
     val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
-
     val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
-
     val ( let* ) : 'a t -> ('a -> 'b t) -> 'b t
   end
 end
@@ -123,9 +110,7 @@ module type MAKE_PLUS_T = sig
   include MAKE_T
 
   val ( <|> ) : 'a t -> 'a t -> 'a t
-
   val append : 'a t -> 'a t -> 'a t
-
   val empty : unit -> 'a t
 end
 
@@ -134,24 +119,18 @@ module CreateMonadPlus
       type 'a t = 'a M.t
 
       val append : 'a t -> 'a t -> 'a t
-
       val empty : unit -> 'a t
     end) : sig
   include MONAD_PLUS with type 'a t = 'a M.t
 
   val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
-
   val ( <*> ) : ('a -> 'b) t -> 'a t -> 'b t
-
   val ( >>= ) : 'a t -> ('a -> 'b t) -> 'b t
-
   val ( <|> ) : 'a t -> 'a t -> 'a t
 
   module Syntax : sig
     val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
-
     val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
-
     val ( let* ) : 'a t -> ('a -> 'b t) -> 'b t
   end
 end = struct
@@ -171,11 +150,8 @@ module type COLLECTION = sig
   include FUNCTOR with type 'a t := 'a t
 
   val fold_right : ('a -> 'b -> 'b) -> 'a t -> 'b -> 'b
-
   val init : int -> (int -> 'a) -> 'a t
-
   val cons : 'a -> 'a t -> 'a t
-
   val empty : 'a t
 end
 
@@ -195,7 +171,6 @@ module SeqCollection = struct
     k i0
 
   let cons x xs () = Stdlib.Seq.Cons (x, xs) [@@inline]
-
   let empty = Stdlib.Seq.empty
 end
 
@@ -209,21 +184,16 @@ module ArrayCollection = struct
   include Stdlib.Array
 
   let empty = [||]
-
   let cons x xs = Stdlib.Array.append [| x |] xs [@@inline]
 end
 
 module type APPLICATIVE_FUNCTIONS = sig
   type 'a applicative
-
   type 'a collection
 
   val ( *> ) : 'a applicative -> 'b applicative -> 'b applicative
-
   val ( <* ) : 'a applicative -> 'b applicative -> 'a applicative
-
   val sequence : 'a applicative collection -> 'a collection applicative
-
   val sequence_ : 'a applicative collection -> 'b collection applicative
 
   val a_map :
@@ -265,23 +235,17 @@ module type APPLICATIVE_FUNCTIONS = sig
     'e applicative
 
   val a_when : bool -> unit applicative -> unit applicative
-
   val a_unless : bool -> unit applicative -> unit applicative
-
   val a_replicate : int -> 'a applicative -> 'a collection applicative
-
   val a_replicate_ : int -> 'a applicative -> unit applicative
 end
 
 module type MONAD_FUNCTIONS = sig
   type 'a monad
-
   type 'a collection
 
   val m_fold : ('a -> 'b -> 'a monad) -> 'a -> 'b collection -> 'a monad
-
   val m_fold_ : ('a -> 'b -> 'a monad) -> 'a -> 'b collection -> unit monad
-
   val ( >=> ) : ('a -> 'b monad) -> ('b -> 'c monad) -> 'a -> 'c monad
 end
 
@@ -306,9 +270,7 @@ module ApplicativeFunctionsGeneric (C : COLLECTION) (A : APPLICATIVE) = struct
     C.fold_right k ms (pure C.empty)
 
   let sequence_ ms = C.fold_right ( *> ) ms (pure C.empty)
-
   let a_map f ms = sequence (C.map f ms) [@@inline]
-
   let a_map_ f ms = sequence_ (C.map f ms) [@@inline]
 
   let a_filter f xs =
@@ -319,9 +281,7 @@ module ApplicativeFunctionsGeneric (C : COLLECTION) (A : APPLICATIVE) = struct
     C.fold_right k xs (pure C.empty)
 
   let traverse f xs = C.map f xs |> sequence [@@inline]
-
   let a_for xs f = traverse f xs [@@inline]
-
   let a_for_ xs f = a_for xs f *> pure () [@@inline]
 
   let lift2 fa aa ba =
@@ -337,11 +297,8 @@ module ApplicativeFunctionsGeneric (C : COLLECTION) (A : APPLICATIVE) = struct
     f a b c d
 
   let a_when condition action = if condition then action else pure ()
-
   let a_unless condition = a_when (not condition)
-
   let a_replicate i m = C.init i (fun _ -> m) |> sequence
-
   let a_replicate_ i m = a_replicate i m *> pure ()
 end
 
@@ -353,7 +310,6 @@ module MonadFunctionsGeneric (C : COLLECTION) (M : MONAD) = struct
   open M
   module Infix = MonadInfix (M)
   open Infix.Syntax
-
   open ApplicativeFunctionsGeneric (C) (M)
 
   let m_fold f initial ms =

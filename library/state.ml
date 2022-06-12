@@ -44,11 +44,8 @@ struct
 
   (* The State functions themselves *)
   let get s = Wrapped.pure (s, s)
-
   let put s _ = Wrapped.pure ((), s)
-
   let run m init = m init
-
   let create x = x [@@inline]
 end
 
@@ -78,12 +75,8 @@ struct
   include StateMonadPlus
 
   let create = StateMonad.create
-
   let run = StateMonad.run
-
   let get = StateMonad.get
-
   let put = StateMonad.put
-
   let elevate = StateMonad.elevate
 end

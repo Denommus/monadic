@@ -8,7 +8,7 @@ let concat s =
   let rec aux current rest () =
     match current () with
     | Cons (e, s) -> Cons (e, aux s rest)
-    | Nil -> ( match rest () with Cons (e, s) -> aux e s () | Nil -> Nil )
+    | Nil -> ( match rest () with Cons (e, s) -> aux e s () | Nil -> Nil)
   in
   aux Stdlib.Seq.empty s
 
@@ -56,7 +56,6 @@ module MakeT (Wrapped : Monad.MONAD) = struct
   include Monad.MonadPlusInfix (SeqMonadPlus)
 
   let run m = m [@@inline]
-
   let create x = x [@@inline]
 
   let elevate v =

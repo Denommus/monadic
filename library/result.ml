@@ -40,11 +40,8 @@ struct
   include Monad.MonadInfix (ResultMonad)
 
   let run m = m [@@inline]
-
   let create x = x [@@inline]
-
   let error x = Error x |> Wrapped.pure
-
   let ok x = Ok x |> Wrapped.pure
 end
 
@@ -76,13 +73,9 @@ module MakePlusT (Wrapped : Monad.MONAD) (E : Monad.MONOID) = struct
   include ResultMonadPlus
 
   let run = ResultMonad.run
-
   let create = ResultMonad.create
-
   let elevate = ResultMonad.elevate
-
   let error = ResultMonad.error
-
   let ok = ResultMonad.ok
 end
 
