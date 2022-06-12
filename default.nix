@@ -8,7 +8,7 @@ ocamlPackages.buildDunePackage {
   useDune2 = true;
   version = "0.1";
   src = ./.;
-  minimumOCamlVersion = "4.08";
+  minimumOCamlVersion = "4.13";
   buildInputs = with ocamlPackages; [
     utop
     ounit2
