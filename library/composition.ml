@@ -18,7 +18,6 @@ struct
     include Functor.ComposeFunctor
 
     let pure x = A1.pure (A2.pure x) [@@inline]
-
     let apply fa xa = A1.apply (A1.map A2.apply fa) xa [@@inline]
   end
 
@@ -37,7 +36,6 @@ struct
     include Applicative.ComposeApplicative
 
     let empty = A1.empty
-
     let append = A1.append
   end
 

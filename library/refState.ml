@@ -63,15 +63,12 @@ struct
 
   module RefStateMonadPlus =
     Monad.CreateMonadPlus (RefStateMonad) (AppendAndEmpty)
+
   include RefStateMonadPlus
 
   let create = RefStateMonad.create
-
   let run = RefStateMonad.run
-
   let get = RefStateMonad.get
-
   let put = RefStateMonad.put
-
   let elevate = RefStateMonad.elevate
 end

@@ -12,7 +12,6 @@ module ZipArrayAlternative = struct
     Stdlib.Array.sub xs start new_length
 
   let pure = Array.Make.pure
-
   let map = Array.Make.map
 
   let apply f x =
@@ -20,7 +19,6 @@ module ZipArrayAlternative = struct
     zip f x |> Stdlib.Array.map c
 
   let append x y = Stdlib.Array.append x @@ drop (Stdlib.Array.length x) y
-
   let empty () = [||]
 end
 

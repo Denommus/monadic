@@ -34,9 +34,7 @@ module MakeT (Wrapped : Monad.MONAD) (W : Monad.MONOID) = struct
   include Monad.MonadInfix (WriterMonad)
 
   let tell w = Wrapped.pure ((), w)
-
   let run m = m [@@inline]
-
   let create x = x [@@inline]
 end
 
@@ -51,7 +49,6 @@ module MakePlusT (Wrapped : Monad.MONAD_PLUS) (W : Monad.MONOID) = struct
     type 'a t = 'a WriterMonad.t
 
     let append xa ya = Wrapped.append xa ya
-
     let empty () = Wrapped.empty ()
   end
 
@@ -59,10 +56,7 @@ module MakePlusT (Wrapped : Monad.MONAD_PLUS) (W : Monad.MONOID) = struct
   include WriterMonadPlus
 
   let create = WriterMonad.create
-
   let run = WriterMonad.run
-
   let tell = WriterMonad.tell
-
   let elevate = WriterMonad.elevate
 end

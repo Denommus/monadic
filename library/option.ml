@@ -21,7 +21,6 @@ module MakeT (Wrapped : Monad.MONAD) = struct
       match x with Some x' -> x' | _ -> Wrapped.pure None
 
     let bind m f = join (map f m)
-
     let empty () = Wrapped.pure None
 
     let append xa ya =
@@ -38,9 +37,7 @@ module MakeT (Wrapped : Monad.MONAD) = struct
   include Monad.MonadPlusInfix (OptionMonadPlus)
 
   let run m = m [@@inline]
-
   let create x = x [@@inline]
-
   let none = empty
 end
 

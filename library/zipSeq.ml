@@ -13,9 +13,7 @@ module ZipSeqAlternative = struct
     else match xs () with Nil -> empty | Cons (_, ls) -> drop (i - 1) ls
 
   let length seq = Stdlib.Seq.fold_left (fun i _ -> i + 1) 0 seq
-
   let pure = Seq.Make.pure
-
   let map = Seq.Make.map
 
   let apply f x =
@@ -23,7 +21,6 @@ module ZipSeqAlternative = struct
     zip f x |> Stdlib.Seq.map c
 
   let append x y = Seq.Make.append x (drop (length x) y)
-
   let empty () = Stdlib.Seq.empty
 end
 
