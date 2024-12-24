@@ -6,7 +6,7 @@
 }:
 buildDunePackage {
   inherit pname;
-  useDune2 = true;
+  duneVersion = "3";
   version = "0.1";
   src = ./.;
   minimumOCamlVersion = "5.0";
