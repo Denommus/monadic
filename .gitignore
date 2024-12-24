@@ -2,3 +2,4 @@ _build/
 result
 .merlin
 *.install
+.direnv/

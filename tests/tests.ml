@@ -1,7 +1,5 @@
 open OUnit2
 
-let empty_list = []
-
 module ReaderWriterTest = struct
   module WriterString = Monadic.Writer.Make (struct
     type t = string

@@ -1,15 +1,16 @@
-{ ocamlPackages
-, nodePackages
-, ocamlformat
-, pname
+{
+  buildDunePackage,
+  utop,
+  ounit2,
+  pname,
 }:
-ocamlPackages.buildDunePackage {
+buildDunePackage {
   inherit pname;
   useDune2 = true;
   version = "0.1";
   src = ./.;
   minimumOCamlVersion = "4.13";
-  buildInputs = with ocamlPackages; [
+  buildInputs = [
     utop
     ounit2
   ];

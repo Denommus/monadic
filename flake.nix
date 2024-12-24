@@ -6,42 +6,42 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }:
-    flake-utils.lib.eachDefaultSystem(system:
+  outputs =
+    {
+      nixpkgs,
+      flake-utils,
+      ...
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pname = "monadic";
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
             (final: prev: {
-              "${pname}" = final.callPackage ./. { inherit pname; };
-              ocamlPackages = prev.ocamlPackages.overrideScope' (new: old: {
-                merlin = old.merlin.overrideAttrs (n: o: {
-                  # Check is broken on Darwin
-                  doCheck = final.stdenv.isLinux;
-                });
-              });
+              "${pname}" = final.ocamlPackages.callPackage ./. { inherit pname; };
             })
           ];
         };
       in
-        {
-          packages = {
-            "${pname}" = pkgs."${pname}";
-          };
-          defaultPackage = pkgs."${pname}";
+      {
+        packages = {
+          "${pname}" = pkgs."${pname}";
+        };
+        defaultPackage = pkgs."${pname}";
 
-          devShell = pkgs.mkShell {
-            inputsFrom = with pkgs; [
-              pkgs."${pname}"
-            ];
-            buildInputs = with pkgs; [
-              rnix-lsp
-              ocamlPackages.ocaml-lsp
-              ocamlPackages.merlin
-              ocamlPackages.utop
-              ocamlformat
-            ];
-          };
-        });
+        devShell = pkgs.mkShell {
+          inputsFrom = [
+            pkgs."${pname}"
+          ];
+          buildInputs = with pkgs; [
+            ocamlPackages.ocaml-lsp
+            ocamlPackages.merlin
+            ocamlPackages.utop
+            ocamlformat
+          ];
+        };
+      }
+    );
 }
