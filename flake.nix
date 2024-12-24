@@ -37,7 +37,6 @@
           ];
           buildInputs = with pkgs; [
             ocamlPackages.ocaml-lsp
-            ocamlPackages.merlin
             ocamlPackages.utop
             ocamlformat
           ];
