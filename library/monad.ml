@@ -152,7 +152,7 @@ module type COLLECTION = sig
   val fold_right : ('a -> 'b -> 'b) -> 'a t -> 'b -> 'b
   val init : int -> (int -> 'a) -> 'a t
   val cons : 'a -> 'a t -> 'a t
-  val empty : 'a t
+  val empty : unit -> 'a t
 end
 
 module SeqCollection = struct
@@ -171,19 +171,19 @@ module SeqCollection = struct
     k i0
 
   let cons x xs () = Stdlib.Seq.Cons (x, xs) [@@inline]
-  let empty = Stdlib.Seq.empty
+  let empty () = Stdlib.Seq.empty
 end
 
 module ListCollection = struct
   include Stdlib.List
 
-  let empty = []
+  let empty () = []
 end
 
 module ArrayCollection = struct
   include Stdlib.Array
 
-  let empty = [||]
+  let empty () = [||]
   let cons x xs = Stdlib.Array.append [| x |] xs [@@inline]
 end
 
@@ -267,9 +267,9 @@ module ApplicativeFunctionsGeneric (C : COLLECTION) (A : APPLICATIVE) = struct
       let+ x = m and+ xs = m' in
       C.cons x xs
     in
-    C.fold_right k ms (pure C.empty)
+    C.fold_right k ms (pure @@ C.empty ())
 
-  let sequence_ ms = C.fold_right ( *> ) ms (pure C.empty)
+  let sequence_ ms = C.fold_right ( *> ) ms (pure @@ C.empty ())
   let a_map f ms = sequence (C.map f ms) [@@inline]
   let a_map_ f ms = sequence_ (C.map f ms) [@@inline]
 
@@ -278,7 +278,7 @@ module ApplicativeFunctionsGeneric (C : COLLECTION) (A : APPLICATIVE) = struct
       let+ flg = f curr and+ ys = acc in
       if flg then C.cons curr xs else ys
     in
-    C.fold_right k xs (pure C.empty)
+    C.fold_right k xs (pure @@ C.empty ())
 
   let traverse f xs = C.map f xs |> sequence [@@inline]
   let a_for xs f = traverse f xs [@@inline]

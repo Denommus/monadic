@@ -1,8 +1,8 @@
 {
   buildDunePackage,
-  utop,
   ounit2,
   pname,
+  melange,
 }:
 buildDunePackage {
   inherit pname;
@@ -10,14 +10,12 @@ buildDunePackage {
   version = "0.1";
   src = ./.;
   minimumOCamlVersion = "5.0";
+
   buildInputs = [
-    utop
     ounit2
   ];
 
-  buildPhase = "dune build -p ${pname}";
-
-  checkPhase = "dune build -p ${pname}";
+  nativeBuildInputs = [ melange ];
 
   doCheck = true;
 }

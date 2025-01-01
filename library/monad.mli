@@ -152,7 +152,7 @@ module type COLLECTION = sig
   val fold_right : ('a -> 'b -> 'b) -> 'a t -> 'b -> 'b
   val init : int -> (int -> 'a) -> 'a t
   val cons : 'a -> 'a t -> 'a t
-  val empty : 'a t
+  val empty : unit -> 'a t
 end
 
 module SeqCollection : COLLECTION with type 'a t = 'a Stdlib.Seq.t

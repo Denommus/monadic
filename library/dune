@@ -1,6 +1,7 @@
 (library
  (name monadic)
- (public_name monadic))
+ (public_name monadic)
+ (modes melange native byte))
 
 (env
  (dev
