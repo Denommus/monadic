@@ -15,25 +15,26 @@
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pname = "monadic";
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
             (final: prev: {
-              "${pname}" = final.ocamlPackages.callPackage ./. { inherit pname; };
+              ocamlPackages = prev.ocamlPackages.overrideScope (ofinal: oprev: {
+                monadic = final.ocamlPackages.callPackage ./. { };
+              });
             })
           ];
         };
       in
       {
         packages = {
-          "${pname}" = pkgs."${pname}";
+          default = pkgs.ocamlPackages.monadic;
+          inherit (pkgs.ocamlPackages) monadic;
         };
-        defaultPackage = pkgs."${pname}";
 
         devShell = pkgs.mkShell {
           inputsFrom = [
-            pkgs."${pname}"
+            pkgs.ocamlPackages.monadic
           ];
           buildInputs = with pkgs; [
             ocamlPackages.ocaml-lsp

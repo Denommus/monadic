@@ -1,11 +1,10 @@
 {
   buildDunePackage,
   ounit2,
-  pname,
   melange,
 }:
 buildDunePackage {
-  inherit pname;
+  pname = "monadic";
   duneVersion = "3";
   version = "0.1";
   src = ./.;
