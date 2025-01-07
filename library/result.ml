@@ -1,5 +1,6 @@
 module MakeT
-    (Wrapped : Monad.MONAD) (E : sig
+    (Wrapped : Monad.MONAD)
+    (E : sig
       type t
     end) =
 struct

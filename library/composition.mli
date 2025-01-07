@@ -29,7 +29,9 @@ module ComposeApplicative : functor
 end
 with type 'a t = 'a A2.t A1.t
 
-module ComposeAlternative (A1 : Monad.ALTERNATIVE) (A2 : Monad.APPLICATIVE) : sig
+module ComposeAlternative
+    (A1 : Monad.ALTERNATIVE)
+    (A2 : Monad.APPLICATIVE) : sig
   include Monad.ALTERNATIVE
 
   val ( <|> ) : 'a t -> 'a t -> 'a t

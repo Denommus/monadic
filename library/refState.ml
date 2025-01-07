@@ -1,5 +1,6 @@
 module MakeT
-    (Wrapped : Monad.MONAD) (S : sig
+    (Wrapped : Monad.MONAD)
+    (S : sig
       type t
     end) =
 struct
@@ -40,7 +41,8 @@ end
 module Make = MakeT (Identity)
 
 module MakePlusT
-    (Wrapped : Monad.MONAD_PLUS) (S : sig
+    (Wrapped : Monad.MONAD_PLUS)
+    (S : sig
       type t
     end) =
 struct

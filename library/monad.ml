@@ -115,7 +115,8 @@ module type MAKE_PLUS_T = sig
 end
 
 module CreateMonadPlus
-    (M : MONAD) (C : sig
+    (M : MONAD)
+    (C : sig
       type 'a t = 'a M.t
 
       val append : 'a t -> 'a t -> 'a t
