@@ -121,20 +121,8 @@ module CreateMonadPlus
 
       val append : 'a t -> 'a t -> 'a t
       val empty : unit -> 'a t
-    end) : sig
-  include MONAD_PLUS with type 'a t = 'a M.t
-
-  val ( <$> ) : ('a -> 'b) -> 'a t -> 'b t
-  val ( <*> ) : ('a -> 'b) t -> 'a t -> 'b t
-  val ( >>= ) : 'a t -> ('a -> 'b t) -> 'b t
-  val ( <|> ) : 'a t -> 'a t -> 'a t
-
-  module Syntax : sig
-    val ( let+ ) : 'a t -> ('a -> 'b) -> 'b t
-    val ( and+ ) : 'a t -> 'b t -> ('a * 'b) t
-    val ( let* ) : 'a t -> ('a -> 'b t) -> 'b t
-  end
-end = struct
+    end) =
+struct
   module MonadPlus = struct
     include M
     include C
